@@ -1,7 +1,5 @@
-const {Post, User, Post_Images, Comment, Tag}  = require("../models/index.js");
-const { $ } = require("mongoose")
+const { Post, User, Post_Images, Comment, Tag } = require("../models/index.js");
 
-/*Para cumplir con "los comentarios más antiguos que X meses no se muestren", calculamos la fecha límite restando los meses (que vienen de process.env.COMMENT_MAX_AGE_MONTHS, por ejemplo 6) a la fecha de hoy, y filtramos con un [Op.gte] (mayor o igual)*/
 const obtenerPosts = async (req, res) => {
   try {
     // Leemos la variable de entorno para ocultar automáticamente los comentarios viejos, si no existe por defecto usamos 6 meses
@@ -9,42 +7,32 @@ const obtenerPosts = async (req, res) => {
     const fechaLimite = new Date();
     fechaLimite.setMonth(fechaLimite.getMonth() - mesesLimite);
 
-    const posts = await Post.findAll({
-      include: [
-        { model: User, as: "usuario", attributes: { exclude: ["password"] } },
-        { model: Post_Images, as: "imagenes" },
-        {
-          model: Tag,
-          as: "etiquetas",
-          through: { attributes: [] }, // Oculta los datos feos de la tabla intermedia en el JSON
-        },
-        {
-          model: Comment,
-          as: "comentarios",
-          where: {
-            fecha: {
-              [Op.gte]: fechaLimite, // Trae solo comentarios cuya fecha sea >= hoy menos X meses
-            },
-          },
-          required: false, // Evita que si un post no tiene comentarios, deje de mostrar el post
-          include: [
-            { model: User, as: "usuario", attributes: ["id", "nickname"] },
-          ], // Opcional: quién comentó
-        },
-      ],
-      order: [["createdAt", "DESC"]], // Opcional: los más nuevos primero
-    });
+    // Se actualiza el campo "visible" de todos los comentarios que superen el COMMENT_MAX_AGE_MONTHS antes de traer los posts
+    await Comment.updateMany(
+      { createdAt: { $lt: fechaLimite }, visible: true },
+      { $set: { visible: false } },
+    );
+
+    //Se obtienen los posts con los comentarios que figuren como visibles unicamente
+    const posts = await Post.find()
+      .populate("autor", "-password")
+      .populate("tags", "nombre")
+      .populate({
+        path: "comentarios",
+        match: { visible: true },
+        populate: { path: "autor", select: "nickname" },
+      })
+      .sort({ createdAt: -1 });
 
     res.status(200).json(posts);
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).json({ message: "Error al obtener los posts" });
   }
 };
 
 const obtenerPost = async (req, res) => {
   try {
-    // El post ya viene cocinado, filtrado y con sus relaciones desde el middleware
     return res.status(200).json(req.post);
   } catch (error) {
     console.error(error);
@@ -54,35 +42,17 @@ const obtenerPost = async (req, res) => {
 
 const crearPost = async (req, res) => {
   try {
-    // Extraemos 'etiquetas' (tal cual viene de Postman y Joi)
-    const { texto, userId, imagenes, etiquetas } = req.body;
+    const { texto, autor, imagenes, tags } = req.body;
 
-    // Creamos el Post base
-    const post = await Post.create({ texto, userId });
-
-    // Si mandaron imágenes, las creamos
-    if (imagenes && imagenes.length > 0) {
-      const mapeoImagenes = imagenes.map((url) => ({
-        imageUrl: url,
-        postId: post.id,
-      }));
-      await Post_Images.bulkCreate(mapeoImagenes);
-    }
-
-    // Si mandaron etiquetas, las vinculamos
-    if (etiquetas && etiquetas.length > 0) {
-      await post.setEtiquetas(etiquetas);
-    }
-
-    // Volvemos a buscar el post completo
-    const postCompleto = await Post.findByPk(post.id, {
-      include: [
-        { model: Post_Images, as: "imagenes" },
-        { model: Tag, as: "etiquetas", through: { attributes: [] } },
-      ],
+    // Creamos el post, en el caso de imagenes y tags los agrega solo si los tiene, sino deja un array vacio
+    const post = await Post.create({
+      texto,
+      autor,
+      imagenes: imagenes ? imagenes.map((url) => ({ url })) : [],
+      tags: tags || [],
     });
 
-    res.status(201).json(postCompleto);
+    res.status(201).json({ message: "Post creado correctamente", post });
   } catch (error) {
     console.error(error);
     res
@@ -93,11 +63,11 @@ const crearPost = async (req, res) => {
 
 const actualizarPost = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { texto, userId } = req.body;
+    const { texto } = req.body;
     const post = req.post; // Obtenemos el post validado por el middleware
-    await post.update(req.body);
-    res.status(200).json(post);
+    post.texto = req.body.texto;
+    await post.save();
+    res.status(200).json({ message: "Post actualizado correctamente", post });
   } catch (error) {
     res.status(500).json({ message: "Error al actualizar el post" });
   }
@@ -105,12 +75,39 @@ const actualizarPost = async (req, res) => {
 
 const eliminarPost = async (req, res) => {
   try {
-    const { id } = req.params;
-    const post = req.post; // Obtenemos el post validado por el middleware
-    await post.destroy();
-    res.status(200).json({ message: "Post eliminado" });
+    const post = req.post;
+    await post.deleteOne();
+    res.status(200).json({ message: "Post eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el post" });
+  }
+};
+
+const agregarImagen = async (req, res) => {
+  try {
+    const { url } = req.body;
+    const post = req.post;
+
+    post.imagenes.push({ url });
+    await post.save();
+
+    res.status(200).json({ message: "Imagen agregada correctamente", post });
+  } catch (error) {
+    res.status(500).json({ message: "Error al agregar la imagen" });
+  }
+};
+
+const eliminarImagen = async (req, res) => {
+  try {
+    const { imageId } = req.params;
+    const post = req.post;
+
+    post.imagenes.id(imageId).deleteOne();
+    await post.save();
+
+    res.status(200).json({ message: "Imagen eliminada correctamente", post });
+  } catch (error) {
+    res.status(500).json({ message: "Error al eliminar la imagen" });
   }
 };
 
@@ -120,4 +117,6 @@ module.exports = {
   crearPost,
   actualizarPost,
   eliminarPost,
+  agregarImagen,
+  eliminarImagen,
 };

@@ -1,9 +1,8 @@
 const models = {
-    Post: require("./post.js"),
-    User: require("./user.js"),
-    Post_Images: require("./post_images.js"),
-    Comment: require("./comment.js"),
-    Tag: require("./tag.js")
+  Post: require("./Post.js"),
+  User: require("./User.js"),
+  Comment: require("./Comment.js"),
+  Tag: require("./Tag.js"),
 };
 
-module.exports = models
+module.exports = models;

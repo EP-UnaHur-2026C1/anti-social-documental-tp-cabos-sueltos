@@ -1,16 +1,14 @@
 console.log("UnaHur - Anti-Social net");
 
-const dotenv = require("dotenv")
+const dotenv = require("dotenv");
 const express = require("express");
 const app = express();
-const conectarDb = require("../config/db")
+const conectarDb = require("../config/db");
 const PORT = process.env.PORT || 3000;
-
 
 //Documentacion
 //const swaggerUi = require("swagger-ui-express");
 //const swaggerSpec = require("../helpers/swagger");
-
 
 //Routes
 const usuariosRouter = require("../routes/usuarios.routes.js");
@@ -20,7 +18,6 @@ const comentariosRouter = require("../routes/comentarios.routes.js");
 const tagsRouter = require("../routes/tags.routes.js");
 
 dotenv.config();
-
 
 //EndPoints
 app.use(express.json());
