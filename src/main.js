@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 //Routes
 const usuariosRouter = require("../routes/usuarios.routes.js");
 const postsRouter = require("../routes/posts.routes.js");
-const postImagesRouter = require("../routes/postImages.routes.js");
+// const postImagesRouter = require("../routes/postImages.routes.js");
 const comentariosRouter = require("../routes/comentarios.routes.js");
 const tagsRouter = require("../routes/tags.routes.js");
 
@@ -23,7 +23,7 @@ dotenv.config();
 app.use(express.json());
 app.use("/usuarios", usuariosRouter);
 app.use("/posts", postsRouter);
-app.use("/postImages", postImagesRouter);
+// app.use("/postImages", postImagesRouter);
 app.use("/comentarios", comentariosRouter);
 app.use("/tags", tagsRouter);
 //app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
