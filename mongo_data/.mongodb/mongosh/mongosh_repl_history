@@ -1,11 +1,0 @@
-db.posts.getIndexes()
-db.posts.dropIndex("imagenes.url_1")
-db.posts.getIndexes()
-db.posts.dropIndex("imageness.url_1")
-db.posts.dropIndex("images.url_1")
-db.posts.dropIndex("imageness.url_1")
-use tienda
-db.posts.dropIndex("images.url_1")
-use tienda
-db.posts.dropIndex("images.url_1")
-db.posts.dropIndex("images.url_1")use tienda

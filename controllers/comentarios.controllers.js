@@ -2,24 +2,10 @@ const { Comment, User, Post } = require("../models");
 
 const obtenerComentario = async (req, res) => {
   try {
-    //Tomamos el comentario que el middleware ya buscó y guardó en el req
-    const comentario = req.comentario;
+    const comentario = await Comment.findById(req.comentario._id)
+      .populate("autor", "-password")
+      .populate("post");
 
-    // Usamos .reload() con await para traer dinámicamente al Usuario y al Post
-    await comentario.reload({
-      include: [
-        {
-          model: User,
-          as: "usuario",
-          attributes: { exclude: ["password"] },
-        },
-        {
-          model: Post,
-          as: "post",
-        },
-      ],
-    });
-    // Ahora que está inflado con la data completa, respondemos
     return res.status(200).json(comentario);
   } catch (error) {
     console.error(error);
@@ -31,12 +17,22 @@ const obtenerComentario = async (req, res) => {
 
 const crearComentario = async (req, res) => {
   try {
-    const { contenido, userId, postId } = req.body;
+    const { contenido, autor, postId } = req.body;
     //  Creamos el comentario directamente
-    const nuevoComentario = await Comment.create({ contenido, userId, postId });
+    const comentario = await Comment.create({
+      contenido,
+      autor,
+      post: postId,
+    });
 
-    //  Respondemos con el éxito de la creación
-    return res.status(201).json(nuevoComentario);
+    // Se sincroniza el comentario con el array de comentarios del post
+    await Post.findByIdAndUpdate(postId, {
+      $push: { comentarios: comentario._id },
+    });
+
+    return res
+      .status(201)
+      .json({ message: "Comentario creado correctamente", comentario });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error al crear el comentario" });
@@ -48,8 +44,12 @@ const actualizarComentario = async (req, res) => {
     const { contenido } = req.body;
     const comentario = req.comentario; // El comentario ya viene validado y adjuntado por el middleware validarComentarioId
 
-    await comentario.update({ contenido });
-    res.status(200).json(comentario);
+    comentario.contenido = contenido;
+    await comentario.save();
+
+    res
+      .status(200)
+      .json({ message: "Comentario actualizado correctamente", comentario });
   } catch (error) {
     res.status(500).json({ message: "Error al actualizar el comentario" });
   }
@@ -58,9 +58,16 @@ const actualizarComentario = async (req, res) => {
 // Eliminar un comentario
 const eliminarComentario = async (req, res) => {
   try {
-    const comentario = req.comentario; // El comentario ya viene validado y adjuntado por el middleware validarComentarioId
-    await comentario.destroy();
-    res.status(200).json({ message: "Comentario eliminado" });
+    const comentario = req.comentario;
+
+    //Primero se saca el comentario del array de comentarios del post
+    await Post.findByIdAndUpdate(comentario.post, {
+      $pull: { comentarios: comentario._id },
+    });
+
+    //Despues se elimina el comentario en si
+    await comentario.deleteOne();
+    res.status(200).json({ message: "Comentario eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el comentario" });
   }
