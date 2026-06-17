@@ -3,19 +3,20 @@ const { Tag, Post } = require("../models");
 // Obtener todos los tags existentes
 const obtenerTags = async (req, res) => {
   try {
-    const tags = await Tag.findAll();
+    // En Mongoose se usa .find() para traer todos
+    const tags = await Tag.find();
     res.status(200).json(tags);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener las etiquetas" });
   }
 };
 
-// Crear una nueva etiqueta (ej: "Programacion")
-
+// Crear una nueva etiqueta
 const crearTag = async (req, res) => {
   try {
     const { nombre } = req.body;
 
+    // En Mongoose también funciona .create()
     const nuevoTag = await Tag.create({ nombre });
     return res.status(201).json(nuevoTag);
   } catch (error) {
@@ -23,13 +24,10 @@ const crearTag = async (req, res) => {
   }
 };
 
-// Obtener un tag específico con todos los posts que lo usan
 const obtenerPostsPorTag = async (req, res) => {
   try {
-    // El tag ya fue buscado y validado por el middleware, solo lo tomamos de 'req'
     const tag = req.tag;
 
-    // Respondemos directamente
     return res.status(200).json(tag);
   } catch (error) {
     return res
@@ -40,19 +38,21 @@ const obtenerPostsPorTag = async (req, res) => {
 
 const asignarTagAPost = async (req, res) => {
   try {
-    const { id, postId } = req.params; // O de req.params si vienen por la URL
+    // Tomamos el post y el tag que el middleware ya buscó y validó
+    const post = req.post;
+    const tag = req.tag;
 
-    // Buscamos el post y el tag en la base de datos
-    const post = await Post.findByPk(Number(postId));
-    const tag = await Tag.findByPk(Number(id));
-
-    // Validamos que existan ambos
-    if (!post || !tag) {
-      return res.status(404).json({ message: "Post o Tag no encontrado" });
+    if (post.tags.includes(tag._id)) {
+      return res
+        .status(400)
+        .json({ message: "El tag ya está asignado a este post" });
     }
 
-    // Asignamos el tag al post 
-    await post.addEtiqueta(tag);
+    // Agregamos el ID del tag al array del Post
+    post.tags.push(tag._id);
+
+    // Guardamos los cambios en la base de datos
+    await post.save();
 
     return res.status(200).json({ message: "Tag asignado con éxito al post" });
   } catch (error) {

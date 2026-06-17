@@ -7,7 +7,6 @@ const {
   eliminarUsuario,
 } = require("../controllers/usuarios.controllers.js");
 
-//Importo middleware de validación
 const {
   validarUsuario,
   validarActualizarUsuario,

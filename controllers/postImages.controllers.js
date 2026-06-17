@@ -1,44 +1,50 @@
-const { Post, User, Post_Images } = require("../models");
+const { Post } = require("../models");
+
 
 const obtenerPostImage = async (req, res) => {
   try {
-    const { postId } = req.params;
-    const post =  req.post
-    const imagenes = await Post_Images.findAll({
-      where: { postId: postId },
-    });
-    res.status(200).json(imagenes);
+    const post = req.post;
+    
+    res.status(200).json(post.imagenes);
   } catch (error) {
-    res.status(500).json({ message: "Error la imagen" });
+    res.status(500).json({ message: "Error al obtener las imágenes" });
   }
 };
 
+
 const crearPostImage = async (req, res) => {
   try {
-    const { postId } = req.params;
-    const { imageUrl } = req.body;
-    const post =  req.post
-    const imagen = await Post_Images.create({
-      postId: postId,
-      imageUrl: imageUrl,
-    });
-    res.status(201).json(imagen);
+    const  url  = req.imageUrl;
+    const post = req.post;
+
+    // Agregamos el subdocumento al array de imágenes del post
+    post.imagenes.push({ url });
+    await post.save();
+    const imagenCreada = post.imagenes[post.imagenes.length - 1];
+
+    res.status(201).json(imagenCreada);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error al crear la imagen" });
   }
 };
 
+
 const eliminarPostImage = async (req, res) => {
   try {
-    const { id } = req.params;
-    const imagen = req.imagen
-    await imagen.destroy();
-    res.status(200).json({ message: "Imagen eliminada" });
+    const post = req.post;     // Traído por validarPostId
+    const imagen = req.imagen; // Traído por validarImageId
+
+    imagen.deleteOne();
+
+    await post.save();
+
+    res.status(200).json({ message: "Imagen eliminada con éxito" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error al eliminar la imagen" });
   }
 };
-
 module.exports = {
   obtenerPostImage,
   crearPostImage,

@@ -16,7 +16,7 @@ const {
 const validarExistePost = require("../middlewares/validarExistePost.js");
 const validarPostId = require("../middlewares/validarPostId.js");
 const validarPostImage = require("../middlewares/validarImage.js");
-const validarImageId = require("../middlewares/validarImageId.js");
+const {validarImageId} = require("../middlewares/validarImageId.js");
 
 const router = Router();
 
