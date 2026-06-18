@@ -1,4 +1,5 @@
-const { Post, User, Post_Images, Comment, Tag } = require("../models/index.js");
+const { Post, User, Comment, Tag } = require("../models/index.js");
+
 
 const obtenerPosts = async (req, res) => {
   try {
@@ -87,7 +88,8 @@ const agregarImagen = async (req, res) => {
   try {
     const { url } = req.body;
     const post = req.post;
-
+    
+   
     post.imagenes.push({ url });
     await post.save();
 
@@ -99,7 +101,7 @@ const agregarImagen = async (req, res) => {
 
 const eliminarImagenDePost = async (req, res) => {
   try {
-    const { imageId } = req.params;
+    const  imageId  = req.imagen;
     const post = req.post;
 
     post.imagenes.id(imageId).deleteOne();
@@ -110,6 +112,7 @@ const eliminarImagenDePost = async (req, res) => {
     res.status(500).json({ message: "Error al eliminar la imagen" });
   }
 };
+ 
 
 module.exports = {
   obtenerPosts,

@@ -23,7 +23,7 @@ dotenv.config();
 app.use(express.json());
 app.use("/usuarios", usuariosRouter);
 app.use("/posts", postsRouter);
-app.use("/postImages", postImagesRouter);
+//app.use("/postImages", postImagesRouter); ESTA RUTA NO ES NECESARIA
 app.use("/comentarios", comentariosRouter);
 app.use("/tags", tagsRouter);
 //app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

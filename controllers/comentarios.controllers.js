@@ -17,16 +17,16 @@ const obtenerComentario = async (req, res) => {
 
 const crearComentario = async (req, res) => {
   try {
-    const { contenido, autor, postId } = req.body;
+    const { contenido, autor, post } = req.body;
     //  Creamos el comentario directamente
     const comentario = await Comment.create({
       contenido,
       autor,
-      post: postId,
+      post: post,
     });
 
     // Se sincroniza el comentario con el array de comentarios del post
-    await Post.findByIdAndUpdate(postId, {
+    await Post.findByIdAndUpdate(post, {
       $push: { comentarios: comentario._id },
     });
 

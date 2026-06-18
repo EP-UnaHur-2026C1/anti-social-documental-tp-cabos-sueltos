@@ -6,24 +6,21 @@ const {
 
 const validarImageId = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const imagenEntidad = await Post_Images.findById(id);
-    if (!imagenEntidad) {
+    const { imageId } = req.params; 
+    const post = req.post;
+
+    const imagen = post.imagenes.find(img => img._id.toString() === imageId.toString());
+
+    if (!imagen) {
       return res
         .status(404)
-        .json({ message: "La imagen no existe en la entidad Post_Images" });
+        .json({ message: "Imagen no encontrada en este post" });
     }
-
-    req.imagenEntidad = imagenEntidad;
-
+    req.imagen = imagen;
     next();
   } catch (error) {
-    console.error("Error en middleware validarImageIdEntidad:", error);
-
-    // Si meten un ID con un formato inválido (menos caracteres, etc.), Mongoose saltará al catch
-    return res
-      .status(500)
-      .json({ message: "Error al validar el ID de la imagen en la entidad" });
+    console.error(error);
+    return res.status(500).json({ message: "Error al validar el ID de la imagen" });
   }
 };
 

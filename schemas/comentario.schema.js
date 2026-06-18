@@ -10,7 +10,7 @@ const comentarioSchema = Joi.object({
     "any.required": "El autor es obligatorio",
     "string.length": "El autor debe ser un ID válido",
   }),
-  postId: Joi.string().hex().length(24).required().messages({
+  post: Joi.string().hex().length(24).required().messages({
     "any.required": "El postId es obligatorio",
     "string.length": "El postId debe ser un ID válido",
   }),

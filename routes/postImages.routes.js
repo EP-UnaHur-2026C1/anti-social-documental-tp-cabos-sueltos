@@ -1,8 +1,13 @@
+/*
+
+YA NO ES NECESARIA ESTA RUTA, LAS IMAGENES SE MANEJAN DESDE POSTS
+
 const { Router } = require("express");
 const {
   obtenerPostImage,
   crearPostImage,
   eliminarImagen,
+  obtenerImagenes
 } = require("../controllers/postImages.controllers.js");
 const validarPostImage = require("../middlewares/validarImage.js");
 const {
@@ -12,9 +17,10 @@ const {
 const validarPostId = require("../middlewares/validarPostId.js");
 const router = Router();
 
+router.get("/",obtenerImagenes)//funciona
 router.get(
   "/:postId",
-  /*validarPostImage,*/
+  validarPostImage,
   validarPostId,
   obtenerPostImage,
 );// no funciona
@@ -23,6 +29,9 @@ router.delete(
   "/:id",
   validarImageId,
   eliminarImagen
-);// no funciona,
+);// funciona,
 
 module.exports = router;
+
+YA NO ES NECESARIA ESTA RUTA, LAS IMAGENES SE MANEJAN DESDE POSTS
+*/

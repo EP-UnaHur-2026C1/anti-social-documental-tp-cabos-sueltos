@@ -1,6 +1,16 @@
 const { Post } = require("../models");
 const { Post_Images } = require("../models/post_images.js");
 
+const obtenerImagenes = async (req, res) =>{
+  try{
+    const imagenes = await Post_Images.find(); 
+    res.status(200).json(imagenes);
+  }catch(error){
+     res.status(500).json({ message: "Error al obtener las imágenes" });
+  }
+}
+
+
 
 const obtenerPostImage = async (req, res) => {
   try {
@@ -64,5 +74,6 @@ const eliminarImagen = async (req, res) => {
 module.exports = {
   obtenerPostImage,
   crearPostImage,
-  eliminarImagen
+  eliminarImagen,
+  obtenerImagenes
 };
