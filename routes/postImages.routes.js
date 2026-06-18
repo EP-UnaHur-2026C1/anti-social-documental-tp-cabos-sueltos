@@ -2,20 +2,27 @@ const { Router } = require("express");
 const {
   obtenerPostImage,
   crearPostImage,
-  eliminarPostImage,
+  eliminarImagen,
 } = require("../controllers/postImages.controllers.js");
 const validarPostImage = require("../middlewares/validarImage.js");
-const {validarImageId,validarUrl} = require("../middlewares/validarImageId.js");
+const {
+  validarImageId,
+  validarUrl,
+} = require("../middlewares/validarImageId.js");
 const validarPostId = require("../middlewares/validarPostId.js");
 const router = Router();
 
 router.get(
-  "/:postId/imagenes",
-  validarPostImage,
+  "/:postId",
+  /*validarPostImage,*/
   validarPostId,
   obtenerPostImage,
-);
-router.post("/:postId/imagenes", validarPostId,validarUrl, crearPostImage);
-router.delete("/:postId/imagenes/:id", validarPostId, validarImageId, eliminarPostImage);
+);// no funciona
+router.post("/:postId/imagenes", validarPostId, validarUrl, crearPostImage); //funciona
+router.delete(
+  "/:id",
+  validarImageId,
+  eliminarImagen
+);// no funciona,
 
 module.exports = router;

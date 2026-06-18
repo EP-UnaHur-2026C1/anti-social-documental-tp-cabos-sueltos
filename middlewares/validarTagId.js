@@ -1,6 +1,21 @@
 const { Tag, Post } = require("../models/index");
 
 
+const validarExisteTag = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const tag = await Tag.findById(id);
+    if (!tag) return res.status(404).json({ message: "Tag no encontrado" });
+
+    req.tag = tag; // Guardamos el tag en el req para el controlador
+    next();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error de validación del Tag" });
+  }
+};
+
+
 const validarNombreTag = async (req, res, next) => {
   const { nombre } = req.body;
 
@@ -55,5 +70,5 @@ const validarExiteTagConPosts = async (req, res, next) => {
 module.exports = {
   validarExiteTagConPosts,
   validarNombreTag,
- 
+  validarExisteTag
 };

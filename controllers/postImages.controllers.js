@@ -1,4 +1,5 @@
 const { Post } = require("../models");
+const { Post_Images } = require("../models/post_images.js");
 
 
 const obtenerPostImage = async (req, res) => {
@@ -12,41 +13,56 @@ const obtenerPostImage = async (req, res) => {
 };
 
 
+
+
 const crearPostImage = async (req, res) => {
   try {
-    const  url  = req.imageUrl;
-    const post = req.post;
+    const url = req.imageUrl; 
+    const post = req.post;     
 
-    // Agregamos el subdocumento al array de imágenes del post
-    post.imagenes.push({ url });
+    const nuevaImagenEntidad = new Post_Images({
+      postId: post._id,
+      imageUrl: url
+    });
+    await nuevaImagenEntidad.save(); 
+
+    
+    post.imagenes.push({ url }); 
     await post.save();
-    const imagenCreada = post.imagenes[post.imagenes.length - 1];
 
-    res.status(201).json(imagenCreada);
+    // Devolvemos la imagen de la entidad recién creada para confirmar
+    res.status(201).json(nuevaImagenEntidad);
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error al crear la imagen" });
+    res.status(500).json({ message: "Error al registrar la imagen en la entidad" });
   }
 };
 
 
-const eliminarPostImage = async (req, res) => {
+const eliminarImagen = async (req, res) => {
   try {
-    const post = req.post;     // Traído por validarPostId
-    const imagen = req.imagen; // Traído por validarImageId
+    const { id } = req.params; 
 
-    imagen.deleteOne();
+    
+    const imagenEntidad = await Post_Images.findByIdAndDelete(id);
+    if (!imagenEntidad) {
+      return res.status(404).json({ message: "La imagen no existe en la entidad Post_Images" });
+    }
+    await Post.findByIdAndUpdate(
+      imagenEntidad.postId,
+      { $pull: { imagenes: { url: imagenEntidad.imageUrl } } } 
+    );
 
-    await post.save();
-
-    res.status(200).json({ message: "Imagen eliminada con éxito" });
+    return res.status(200).json({ message: "Imagen eliminada con éxito de la entidad y del post" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error al eliminar la imagen" });
+    return res.status(500).json({ message: "Error interno al eliminar la imagen" });
   }
 };
+
 module.exports = {
   obtenerPostImage,
   crearPostImage,
-  eliminarPostImage,
+  eliminarImagen
 };

@@ -6,7 +6,7 @@ const {
   actualizarPost,
   eliminarPost,
   agregarImagen,
-  eliminarImagen,
+  eliminarImagenDePost,
 } = require("../controllers/posts.controllers.js");
 
 const {
@@ -17,22 +17,21 @@ const validarExistePost = require("../middlewares/validarExistePost.js");
 const validarPostId = require("../middlewares/validarPostId.js");
 const validarPostImage = require("../middlewares/validarImage.js");
 const {validarImageId} = require("../middlewares/validarImageId.js");
-
 const router = Router();
 
-router.get("/", obtenerPosts);
-router.get("/:id", validarExistePost, obtenerPost);
-router.post("/", validarPost, crearPost);
-router.put("/:id", validarPostId, validarActualizarPost, actualizarPost);
-router.delete("/:id", validarPostId, eliminarPost);
+router.get("/", obtenerPosts);//funciona
+router.get("/:id", validarExistePost, obtenerPost);//funciona
+router.post("/", validarPost, crearPost);//funciona
+router.put("/:id", validarPostId, validarActualizarPost, actualizarPost);//funciona
+router.delete("/:id", validarPostId, eliminarPost);//funciona..hay que actualizar el array de posts en tags, para desvincular el post que se borra
 
 //Post Images
-router.post("/:id/imagenes", validarPostId, validarPostImage, agregarImagen);
+router.post("/:id/imagenes", validarPostId, validarPostImage, agregarImagen);//funciona
 router.delete(
   "/:id/imagenes/:imageId",
   validarPostId,
   validarImageId,
-  eliminarImagen,
-);
+  eliminarImagenDePost
+);//funciona
 
 module.exports = router;

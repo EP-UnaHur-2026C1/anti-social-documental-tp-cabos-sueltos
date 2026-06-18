@@ -27,32 +27,32 @@ const crearTag = async (req, res) => {
 const obtenerPostsPorTag = async (req, res) => {
   try {
     const tag = req.tag;
-
-    return res.status(200).json(tag);
+    // Le decimos a Mongoose que cargue los datos reales de los posts dentro del tag
+    await tag.populate({
+      path: "posts",
+      select: "texto imagenes autor tags", // Campos que quieres traer del Post (opcional)
+    });
+    // Devolvemos solo el array de posts ya populado
+    return res.status(200).json(tag.posts);
   } catch (error) {
+    console.error(error);
     return res
       .status(500)
       .json({ message: "Error al obtener los posts de la etiqueta" });
   }
 };
-
 const asignarTagAPost = async (req, res) => {
   try {
     // Tomamos el post y el tag que el middleware ya buscó y validó
     const post = req.post;
     const tag = req.tag;
 
-    if (post.tags.includes(tag._id)) {
-      return res
-        .status(400)
-        .json({ message: "El tag ya está asignado a este post" });
-    }
-
-    // Agregamos el ID del tag al array del Post
     post.tags.push(tag._id);
+    tag.posts.push(post._id);
 
     // Guardamos los cambios en la base de datos
     await post.save();
+    await tag.save();
 
     return res.status(200).json({ message: "Tag asignado con éxito al post" });
   } catch (error) {

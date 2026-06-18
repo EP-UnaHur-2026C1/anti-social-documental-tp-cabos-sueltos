@@ -16,15 +16,15 @@ const validarUsuarioId = require("../middlewares/validarUsuarioId.js");
 
 const router = Router();
 
-router.get("/", obtenerUsuarios);
-router.get("/:id", validarUsuarioId, obtenerUsuario);
-router.post("/", validarUsuario, crearUsuario);
+router.get("/", obtenerUsuarios);//funciona
+router.get("/:id", validarUsuarioId, obtenerUsuario);//funciona
+router.post("/", validarUsuario, crearUsuario);//funciona
 router.put(
   "/:id",
   validarUsuarioId,
   validarActualizarUsuario,
-  actualizarUsuario,
-);
-router.delete("/:id", validarUsuarioId, eliminarUsuario);
+  actualizarUsuario
+);//funciona
+router.delete("/:id", validarUsuarioId, eliminarUsuario);//funciona
 
 module.exports = router;

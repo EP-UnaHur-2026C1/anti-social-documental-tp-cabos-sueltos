@@ -97,7 +97,7 @@ const agregarImagen = async (req, res) => {
   }
 };
 
-const eliminarImagen = async (req, res) => {
+const eliminarImagenDePost = async (req, res) => {
   try {
     const { imageId } = req.params;
     const post = req.post;
@@ -118,5 +118,5 @@ module.exports = {
   actualizarPost,
   eliminarPost,
   agregarImagen,
-  eliminarImagen,
+  eliminarImagenDePost,
 };

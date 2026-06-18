@@ -1,26 +1,29 @@
 const Post = require("../models/Post.js");
-const postImageSchema = require("../schemas/postImages.schema.js");
+const {
+  postImageSchema,
+  Post_Images,
+} = require("../schemas/postImage.schema.js");
 
 const validarImageId = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const post = req.post;
-    // .id() metodo de Mongose para buscar subdocumentos de forma nativa por su _id
-    const imagen = post.imagenes.id(id);
-
-    if (!imagen) {
+    const imagenEntidad = await Post_Images.findById(id);
+    if (!imagenEntidad) {
       return res
         .status(404)
-        .json({ message: "Imagen no encontrada en este post" });
+        .json({ message: "La imagen no existe en la entidad Post_Images" });
     }
-    // Pasamos la imagen al req por si el controlador la necesita
-    req.imagen = imagen;
+
+    req.imagenEntidad = imagenEntidad;
+
     next();
   } catch (error) {
-    console.error(error);
+    console.error("Error en middleware validarImageIdEntidad:", error);
+
+    // Si meten un ID con un formato inválido (menos caracteres, etc.), Mongoose saltará al catch
     return res
       .status(500)
-      .json({ message: "Error al validar el ID de la imagen" });
+      .json({ message: "Error al validar el ID de la imagen en la entidad" });
   }
 };
 

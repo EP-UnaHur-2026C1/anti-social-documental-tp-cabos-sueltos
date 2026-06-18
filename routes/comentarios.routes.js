@@ -6,7 +6,6 @@ const {
   obtenerComentario,
   actualizarComentario,
 } = require("../controllers/comentarios.controllers.js");
-
 const {
   validarComentario,
   validarActualizarComentario,
