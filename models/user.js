@@ -20,6 +20,18 @@ const userSchema = new mongoose.Schema(
       required: [true, "la contraseña es obligatoria"],
       select: false,
     },
+    seguidos: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    seguidores: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,

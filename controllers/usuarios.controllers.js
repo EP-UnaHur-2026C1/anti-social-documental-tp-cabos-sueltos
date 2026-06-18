@@ -57,10 +57,42 @@ const eliminarUsuario = async (req, res) => {
   }
 };
 
+const seguirUsuario = async (req, res) => {
+  try {
+    const { _id: id } = req.usuario;
+    const { _id: seguidorId } = req.seguidor;
+
+    await User.findByIdAndUpdate(seguidorId, { $addToSet: { seguidos: id } });
+    await User.findByIdAndUpdate(id, { $addToSet: { seguidores: seguidorId } });
+
+    res.status(200).json({ message: "Usuario seguido" });
+  } catch (error) {
+    console.error("ERROR COMPLETO DE SEGUIR USUARIO:", error);
+    res.status(500).json({ message: "Error al seguir usuario" });
+  }
+};
+
+const dejarDeSeguir = async (req, res) => {
+  try {
+    const { _id: id } = req.usuario;
+    const { _id: seguidorId } = req.seguidor;
+
+    await User.findByIdAndUpdate(seguidorId, { $pull: { seguidos: id } });
+    await User.findByIdAndUpdate(id, { $pull: { seguidores: seguidorId } });
+
+    res.status(200).json({ message: "Unfollow completado" });
+  } catch (error) {
+    console.error("ERROR COMPLETO DE DEJAR DE SEGUIR USUARIO:", error);
+    res.status(500).json({ message: "Error al dejar de seguir usuario" });
+  }
+};
+
 module.exports = {
   obtenerUsuarios,
   obtenerUsuario,
   crearUsuario,
   actualizarUsuario,
   eliminarUsuario,
+  seguirUsuario,
+  dejarDeSeguir,
 };
