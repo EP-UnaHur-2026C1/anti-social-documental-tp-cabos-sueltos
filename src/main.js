@@ -5,6 +5,7 @@ const express = require("express");
 const app = express();
 const conectarDb = require("../config/db");
 const PORT = process.env.PORT || 3000;
+const { conectarRedis } = require("../config/redis");
 
 //Documentacion
 //const swaggerUi = require("swagger-ui-express");
@@ -30,6 +31,7 @@ app.use("/tags", tagsRouter);
 const start = async () => {
   try {
     conectarDb();
+    conectarRedis();
     app.listen(PORT, () => {
       console.log(
         `Servidor de la Red Anti-Social corriendo en http://localhost:${PORT}`,
