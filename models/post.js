@@ -1,16 +1,4 @@
 const mongoose = require("mongoose");
-// const Post_Images = require("./post_images");
-
-const postImageSchema = new mongoose.Schema(
-  {
-    url: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-  },
-  { timestamps: true },
-);
 
 const postSchema = new mongoose.Schema(
   {
@@ -18,7 +6,16 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    imagenes: [postImageSchema],
+    imagenes: [
+      {
+        url: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+      },
+      { timestamps: true },
+    ],
     autor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
