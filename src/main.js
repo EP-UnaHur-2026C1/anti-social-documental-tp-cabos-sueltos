@@ -8,8 +8,8 @@ const PORT = process.env.PORT || 3000;
 const { conectarRedis } = require("../config/redis");
 
 //Documentacion
-//const swaggerUi = require("swagger-ui-express");
-//const swaggerSpec = require("../helpers/swagger");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("../helpers/swagger");
 
 //Routes
 const usuariosRouter = require("../routes/usuarios.routes.js");
@@ -25,7 +25,7 @@ app.use("/usuarios", usuariosRouter);
 app.use("/posts", postsRouter);
 app.use("/comentarios", comentariosRouter);
 app.use("/tags", tagsRouter);
-//app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Levantamos el servidor usando la variable PORT
 const start = async () => {

@@ -1,4 +1,5 @@
 const { Tag, Post } = require("../models");
+const { redisClient } = require("../config/redis");
 
 // Obtener todos los tags existentes
 const obtenerTags = async (req, res) => {
@@ -11,12 +12,10 @@ const obtenerTags = async (req, res) => {
   }
 };
 
-// Crear una nueva etiqueta
 const crearTag = async (req, res) => {
   try {
     const { nombre } = req.body;
 
-    // En Mongoose también funciona .create()
     const nuevoTag = await Tag.create({ nombre });
     return res.status(201).json(nuevoTag);
   } catch (error) {
@@ -30,8 +29,9 @@ const obtenerPostsPorTag = async (req, res) => {
     // Le decimos a Mongoose que cargue los datos reales de los posts dentro del tag
     await tag.populate({
       path: "posts",
-      select: "texto imagenes autor tags", // Campos que quieres traer del Post (opcional)
+      select: "texto imagenes autor tags",
     });
+    await redisClient.del("posts");
     // Devolvemos solo el array de posts ya populado
     return res.status(200).json(tag.posts);
   } catch (error) {
@@ -43,17 +43,16 @@ const obtenerPostsPorTag = async (req, res) => {
 };
 const asignarTagAPost = async (req, res) => {
   try {
-    // Tomamos el post y el tag que el middleware ya buscó y validó
     const post = req.post;
     const tag = req.tag;
 
     post.tags.push(tag._id);
     tag.posts.push(post._id);
 
-    // Guardamos los cambios en la base de datos
     await post.save();
     await tag.save();
-
+    
+    await redisClient.del("posts");
     return res.status(200).json({ message: "Tag asignado con éxito al post" });
   } catch (error) {
     console.error(error);

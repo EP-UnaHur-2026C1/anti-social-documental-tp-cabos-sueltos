@@ -5,6 +5,7 @@ const {
   eliminarComentario,
   obtenerComentario,
   actualizarComentario,
+  obtenerComentarios
 } = require("../controllers/comentarios.controllers.js");
 const {
   validarComentario,
@@ -12,6 +13,7 @@ const {
 } = require("../middlewares/validarComentario.js");
 const validarComentarioId = require("../middlewares/validarComentarioId.js");
 
+router.get("/", obtenerComentarios)
 router.get("/:id", validarComentarioId, obtenerComentario); //funciona
 router.post("/", validarComentario, crearComentario); // funciona
 router.put(

@@ -53,15 +53,25 @@ const obtenerPost = async (req, res) => {
 const crearPost = async (req, res) => {
   try {
     const { texto, autor, imagenes, tags } = req.body;
+ 
 
-    // Creamos el post, en el caso de imagenes y tags los agrega solo si los tiene, sino deja un array vacio
     const post = await Post.create({
       texto,
       autor,
       imagenes: imagenes ? imagenes.map((url) => ({ url })) : [],
       tags: tags || [],
     });
+
+    //Si el post tiene tags, los actualizamos 
+    if (tags && tags.length > 0) {
+      await Tag.updateMany(
+        { _id: { $in: tags } },       
+        { $push: { posts: post._id } }
+      );
+    }
+
     await redisClient.del("posts");
+
     res.status(201).json({ message: "Post creado correctamente", post });
   } catch (error) {
     console.error(error);
@@ -86,15 +96,28 @@ const actualizarPost = async (req, res) => {
 
 const eliminarPost = async (req, res) => {
   try {
-    const post = req.post;
+    const post = req.post; 
+
+    // Buscamos TODOS los tags que tengan este post y se lo removemos de su array
+    await Tag.updateMany(
+      { posts: post._id },          
+      { $pull: { posts: post._id } } 
+    );
+    await Comment.updateMany(
+      { posts: post._id },          
+      { $pull: { posts: post._id } } 
+    );
     await post.deleteOne();
+
+    
     await redisClient.del("posts");
+
     res.status(200).json({ message: "Post eliminado correctamente" });
   } catch (error) {
+    console.error("ERROR AL ELIMINAR POST:", error); 
     res.status(500).json({ message: "Error al eliminar el post" });
   }
 };
-
 const agregarImagen = async (req, res) => {
   try {
     const { url } = req.body;
@@ -123,6 +146,17 @@ const eliminarImagenDePost = async (req, res) => {
   }
 };
 
+const obtenerImagenesDePost = async (req, res) => {
+  try {
+    const postId = req.post;
+    const post = await Post.findById(postId).populate("imagenes");
+    res.status(200).json(post.imagenes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener las imágenes" });
+  }
+};
+
 module.exports = {
   obtenerPosts,
   obtenerPost,
@@ -131,4 +165,5 @@ module.exports = {
   eliminarPost,
   agregarImagen,
   eliminarImagenDePost,
+  obtenerImagenesDePost,
 };

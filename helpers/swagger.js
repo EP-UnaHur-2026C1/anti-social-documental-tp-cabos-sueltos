@@ -5,7 +5,7 @@ const options = {
     openapi: "3.0.3",
     info: {
       title: "Red Anti-Social",
-      version: "1.0.0",
+      version: "1.0.1",
       description: "Documentación API de Red Anti-Social",
     },
   },

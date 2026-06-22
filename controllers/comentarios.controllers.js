@@ -1,4 +1,14 @@
 const { Comment, User, Post } = require("../models");
+const { redisClient } = require("../config/redis");
+
+const obtenerComentarios = async (req, res) => {
+  try {
+    const comentarios = await Comment.find(); 
+    res.status(200).json(comentarios);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener los comentarios" });
+  }
+};
 
 const obtenerComentario = async (req, res) => {
   try {
@@ -29,7 +39,7 @@ const crearComentario = async (req, res) => {
     await Post.findByIdAndUpdate(post, {
       $push: { comentarios: comentario._id },
     });
-
+    await redisClient.del("posts");
     return res
       .status(201)
       .json({ message: "Comentario creado correctamente", comentario });
@@ -46,7 +56,7 @@ const actualizarComentario = async (req, res) => {
 
     comentario.contenido = contenido;
     await comentario.save();
-
+    await redisClient.del("posts");
     res
       .status(200)
       .json({ message: "Comentario actualizado correctamente", comentario });
@@ -64,8 +74,7 @@ const eliminarComentario = async (req, res) => {
     await Post.findByIdAndUpdate(comentario.post, {
       $pull: { comentarios: comentario._id },
     });
-
-    //Despues se elimina el comentario en si
+    await redisClient.del("posts");
     await comentario.deleteOne();
     res.status(200).json({ message: "Comentario eliminado correctamente" });
   } catch (error) {
@@ -78,4 +87,5 @@ module.exports = {
   crearComentario,
   actualizarComentario,
   eliminarComentario,
+  obtenerComentarios
 };

@@ -7,6 +7,7 @@ const {
   eliminarPost,
   agregarImagen,
   eliminarImagenDePost,
+  obtenerImagenesDePost
 } = require("../controllers/posts.controllers.js");
 
 const {
@@ -26,6 +27,7 @@ router.put("/:id", validarPostId, validarActualizarPost, actualizarPost);//funci
 router.delete("/:id", validarPostId, eliminarPost);//funciona..hay que actualizar el array de posts en tags, para desvincular el post que se borra
 
 //Post Images
+router.get("/:id/imagenes",validarPostId, obtenerImagenesDePost)
 router.post("/:id/imagenes", validarPostId, validarPostImage, agregarImagen);//funciona
 router.delete(
   "/:id/imagenes/:imageId",
