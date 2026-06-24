@@ -7,7 +7,8 @@ const {
   eliminarPost,
   agregarImagen,
   eliminarImagenDePost,
-  obtenerImagenesDePost
+  obtenerImagenesDePost,
+  agregarImagenMulter,
 } = require("../controllers/posts.controllers.js");
 
 const {
@@ -17,23 +18,35 @@ const {
 const validarExistePost = require("../middlewares/validarExistePost.js");
 const validarPostId = require("../middlewares/validarPostId.js");
 const validarPostImage = require("../middlewares/validarImage.js");
-const {validarImageId} = require("../middlewares/validarImageId.js");
+const { validarImageId } = require("../middlewares/validarImageId.js");
 const router = Router();
 
-router.get("/", obtenerPosts);//funciona
-router.get("/:id", validarExistePost, obtenerPost);//funciona
-router.post("/", validarPost, crearPost);//funciona
-router.put("/:id", validarPostId, validarActualizarPost, actualizarPost);//funciona
-router.delete("/:id", validarPostId, eliminarPost);//funciona..hay que actualizar el array de posts en tags, para desvincular el post que se borra
+// importamos la configuracion de multer
+const upload = require("../middlewares/upload.js");
+
+router.get("/", obtenerPosts); //funciona
+router.get("/:id", validarExistePost, obtenerPost); //funciona
+router.post("/", validarPost, crearPost); //funciona
+router.put("/:id", validarPostId, validarActualizarPost, actualizarPost); //funciona
+router.delete("/:id", validarPostId, eliminarPost); //funciona..hay que actualizar el array de posts en tags, para desvincular el post que se borra
 
 //Post Images
-router.get("/:id/imagenes",validarPostId, obtenerImagenesDePost)
-router.post("/:id/imagenes", validarPostId, validarPostImage, agregarImagen);//funciona
+router.get("/:id/imagenes", validarPostId, obtenerImagenesDePost);
+router.post("/:id/imagenes", validarPostId, validarPostImage, agregarImagen); //funciona
+
+//probemos si multer funciona como endpoint separado -- funciona
+router.post(
+  "/:id/upload/imagenes",
+  validarPostId,
+  upload.single("image"), // procesa el archivo y lo deja en req
+  agregarImagenMulter,
+);
+
 router.delete(
   "/:id/imagenes/:imageId",
   validarPostId,
   validarImageId,
-  eliminarImagenDePost
-);//funciona
+  eliminarImagenDePost,
+); //funciona
 
 module.exports = router;
