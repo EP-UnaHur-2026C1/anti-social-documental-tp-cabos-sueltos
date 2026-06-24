@@ -84,7 +84,7 @@ const actualizarPost = async (req, res) => {
   try {
     const { texto } = req.body;
     const post = req.post; // Obtenemos el post validado por el middleware
-    post.texto = req.body.texto;
+    post.texto = texto;
     await post.save();
     await redisClient.del("posts");
     res.status(200).json({ message: "Post actualizado correctamente", post });
@@ -99,10 +99,7 @@ const eliminarPost = async (req, res) => {
 
     // Buscamos TODOS los tags que tengan este post y se lo removemos de su array
     await Tag.updateMany({ posts: post._id }, { $pull: { posts: post._id } });
-    await Comment.updateMany(
-      { posts: post._id },
-      { $pull: { posts: post._id } },
-    );
+    await Comment.deleteMany({ post: post._id });
     await post.deleteOne();
 
     await redisClient.del("posts");

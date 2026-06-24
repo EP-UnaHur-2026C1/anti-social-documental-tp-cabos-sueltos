@@ -524,6 +524,51 @@ paths:
         '500':
           description: Error al agregar la imagen.
 
+  /posts/{id}/upload/imagenes:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID del post
+        schema:
+          type: string
+
+    post:
+      summary: Subir una imagen al servidor y asociarla a un post
+      tags:
+        - Posts - Imágenes
+      description: Sube un archivo de imagen al servidor mediante multipart/form-data, lo almacena en la carpeta /uploads y guarda la URL generada en el post.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Archivo de imagen a subir
+      responses:
+        '200':
+          description: Imagen subida y asociada correctamente al post.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Imagen agregada correctamente"
+                  post:
+                    $ref: '#/components/schemas/Post'
+        '404':
+          description: El post no existe.
+        '500':
+          description: Error al subir la imagen.
+
   /posts/{id}/imagenes/{imageId}:
     delete:
       summary: Eliminar una imagen específica de un post
