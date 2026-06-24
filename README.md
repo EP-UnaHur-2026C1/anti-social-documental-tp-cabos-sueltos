@@ -127,6 +127,7 @@ Los archivos YAML de Swagger están ubicados en `docs/` y se cargan desde `helpe
 | GET | `/posts/:id/imagenes` | Obtener imágenes de un post |
 | POST | `/posts/:id/imagenes` | Agregar una imagen a un post |
 | DELETE | `/posts/:id/imagenes/:imageId` | Eliminar una imagen de un post |
+| POST | `/posts/:id/upload/imagenes` | Subir una imagen al servidor y asociarla a un post |
 
 ### Comentarios — `/comentarios`
 
@@ -146,6 +147,9 @@ Los archivos YAML de Swagger están ubicados en `docs/` y se cargan desde `helpe
 | POST | `/tags` | Crear un nuevo tag |
 | GET | `/tags/:id/posts` | Obtener todos los posts de un tag |
 | POST | `/tags/:id/posts/:postId` | Asignar un tag a un post |
+| GET    | `/tags/:id` | Obtener un tag por ID |
+| PUT    | `/tags/:id` | Actualizar un tag |
+| DELETE | `/tags/:id` | Eliminar un tag |
 
 ###
 

@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 const {
   obtenerTags,
+  obtenerTag,
   crearTag,
+  actualizarTag,
+  eliminarTag,
   obtenerPostsPorTag,
   asignarTagAPost,
 } = require("../controllers/tags.controllers");
@@ -15,7 +18,10 @@ const {
 
 
 router.get("/", obtenerTags);//funciona
+router.get("/:id", validarExisteTag, obtenerTag);
 router.post("/", validarTag,validarNombreTag, crearTag);//funciona
+router.put("/:id", validarExisteTag, validarTag, validarNombreTag, actualizarTag);
+router.delete("/:id", validarExisteTag, eliminarTag);
 router.get("/:id/posts", validarExisteTag, obtenerPostsPorTag);//funciona
 router.post(
   "/:id/posts/:postId",

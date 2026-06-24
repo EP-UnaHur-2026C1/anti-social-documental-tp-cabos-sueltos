@@ -317,6 +317,88 @@ paths:
           description: El tag o el post no existen.
         '500':
           description: Error interno del servidor.
+  /tags/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID único del tag
+        schema:
+          type: string
+          example: "64f1bc23e4b0a12345678902"
+
+    get:
+      summary: Obtener un tag por ID
+      tags:
+        - Etiquetas
+      responses:
+        '200':
+          description: Tag encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '404':
+          description: Tag no encontrado.
+        '500':
+          description: Error al obtener el tag.
+
+    put:
+      summary: Actualizar el nombre de un tag
+      tags:
+        - Etiquetas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+              properties:
+                nombre:
+                  type: string
+                  example: "re_ofendido"
+      responses:
+        '200':
+          description: Tag actualizado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Tag actualizado correctamente"
+                  tag:
+                    $ref: '#/components/schemas/Tag'
+        '400':
+          description: El nombre del tag ya existe o es inválido.
+        '404':
+          description: Tag no encontrado.
+        '500':
+          description: Error al actualizar el tag.
+
+    delete:
+      summary: Eliminar un tag
+      tags:
+        - Etiquetas
+      description: Elimina el tag y lo desvincula de todos los posts que lo tenían asignado.
+      responses:
+        '200':
+          description: Tag eliminado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Tag eliminado correctamente"
+        '404':
+          description: Tag no encontrado.
+        '500':
+          description: Error al eliminar el tag.
 
   /posts:
     get:
@@ -606,6 +688,22 @@ paths:
           description: Error al eliminar la imagen.
 
   /comentarios:
+    get:
+      summary: Obtener todos los comentarios
+      tags:
+        - Comentarios
+      responses:
+        '200':
+          description: Lista de comentarios obtenida correctamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '500':
+          description: Error al obtener los comentarios.
+
     post:
       summary: Crear un nuevo comentario
       tags:

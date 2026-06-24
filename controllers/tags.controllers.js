@@ -12,6 +12,14 @@ const obtenerTags = async (req, res) => {
   }
 };
 
+const obtenerTag = async (req, res) => {
+  try {
+    return res.status(200).json(req.tag);
+  } catch (error) {
+    return res.status(500).json({ message: "Error al obtener la etiqueta" });
+  }
+};
+
 const crearTag = async (req, res) => {
   try {
     const { nombre } = req.body;
@@ -20,6 +28,32 @@ const crearTag = async (req, res) => {
     return res.status(201).json(nuevoTag);
   } catch (error) {
     return res.status(500).json({ message: "Error al crear la etiqueta" });
+  }
+};
+
+const actualizarTag = async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    const tag = req.tag;
+    tag.nombre = nombre;
+    await tag.save();
+    return res
+      .status(200)
+      .json({ message: "Tag actualizado correctamente", tag });
+  } catch (error) {
+    return res.status(500).json({ message: "Error al actualizar la etiqueta" });
+  }
+};
+
+const eliminarTag = async (req, res) => {
+  try {
+    const tag = req.tag;
+    // Desvincular el tag de todos los posts que lo tienen
+    await Post.updateMany({ tags: tag._id }, { $pull: { tags: tag._id } });
+    await tag.deleteOne();
+    return res.status(200).json({ message: "Tag eliminado correctamente" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error al eliminar la etiqueta" });
   }
 };
 
@@ -51,7 +85,7 @@ const asignarTagAPost = async (req, res) => {
 
     await post.save();
     await tag.save();
-    
+
     await redisClient.del("posts");
     return res.status(200).json({ message: "Tag asignado con éxito al post" });
   } catch (error) {
@@ -62,7 +96,10 @@ const asignarTagAPost = async (req, res) => {
 
 module.exports = {
   obtenerTags,
+  obtenerTag,
   crearTag,
+  actualizarTag,
+  eliminarTag,
   obtenerPostsPorTag,
   asignarTagAPost,
 };
