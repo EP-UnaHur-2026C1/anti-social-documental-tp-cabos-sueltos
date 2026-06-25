@@ -1,5 +1,6 @@
 const { Post, User, Comment, Tag } = require("../models/index.js");
 const { redisClient } = require("../config/redis");
+const { message } = require("../schemas/postImage.schema.js");
 
 const obtenerPosts = async (req, res) => {
   try {
@@ -47,6 +48,26 @@ const obtenerPost = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error al obtener el post" });
+  }
+};
+
+// obtener todos los post de un usuario
+
+const obtenerPostsDeUserId = async (req, res) => {
+  try {
+    const userId = req.usuario._id;
+    const posts = await Post.find({ autor: userId }).populate("autor");
+
+    if (posts.length === 0) {
+      return res
+        .status(200)
+        .json({ message: "el usuario aun no ha hecho ningun post" });
+    }
+
+    return res.status(200).json(posts);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error al obtener los posts" });
   }
 };
 
@@ -169,6 +190,7 @@ const obtenerImagenesDePost = async (req, res) => {
 module.exports = {
   obtenerPosts,
   obtenerPost,
+  obtenerPostsDeUserId,
   crearPost,
   actualizarPost,
   eliminarPost,

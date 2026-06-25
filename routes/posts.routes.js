@@ -2,6 +2,7 @@ const { Router } = require("express");
 const {
   obtenerPosts,
   obtenerPost,
+  obtenerPostsDeUserId,
   crearPost,
   actualizarPost,
   eliminarPost,
@@ -21,10 +22,14 @@ const validarPostImage = require("../middlewares/validarImage.js");
 const { validarImageId } = require("../middlewares/validarImageId.js");
 const router = Router();
 
+//esto lo necesitamos para traer todos los post de un usuario especifico
+const validarUsuarioId = require("../middlewares/validarUsuarioId.js");
+
 // importamos la configuracion de multer
 const upload = require("../middlewares/upload.js");
 
 router.get("/", obtenerPosts); //funciona
+router.get("/:id", validarUsuarioId, obtenerPostsDeUserId); // funciona
 router.get("/:id", validarExistePost, obtenerPost); //funciona
 router.post("/", validarPost, crearPost); //funciona
 router.put("/:id", validarPostId, validarActualizarPost, actualizarPost); //funciona
