@@ -138,6 +138,7 @@ En la carpera `colecciones` se encuentran los archivos JSON para realizar la pru
 |---|---|---|
 | GET | `/comentarios` | Obtener todos los comentarios |
 | GET | `/comentarios/:id` | Obtener un comentario por ID |
+| GET | `/comentarios/:id/post` | Obtener un comentarios de un post por ID |
 | POST | `/comentarios` | Crear un comentario |
 | PUT | `/comentarios/:id` | Actualizar un comentario |
 | DELETE | `/comentarios/:id` | Eliminar un comentario |

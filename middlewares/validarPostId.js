@@ -1,7 +1,7 @@
 const { Post } = require("../models/index");
 
 const validarPostId = async (req, res, next) => {
-  const id = req.params.id || req.body.postId; // Buscamos el ID en params o en body, dependiendo de la ruta
+  const id = req.params.id || req.body.postid; // Buscamos el ID en params o en body, dependiendo de la ruta
   try {
     if (!id) {
       return res.status(400).json({ message: "El ID del post es obligatorio" });

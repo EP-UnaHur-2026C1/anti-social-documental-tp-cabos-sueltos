@@ -22,12 +22,6 @@ const postSchema = new mongoose.Schema(
       required: true,
       index: true
     },
-    comentarios: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment",
-      },
-    ],
     tags: [
       {
         type: mongoose.Schema.Types.ObjectId,

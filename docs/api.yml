@@ -11,15 +11,15 @@ paths:
       tags:
         - Usuarios
       responses:
-        '200':
+        "200":
           description: Lista de usuarios obtenida correctamente.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-        '500':
+                  $ref: "#/components/schemas/User"
+        "500":
           description: Error interno del servidor.
 
     post:
@@ -49,7 +49,7 @@ paths:
                   format: password
                   example: "password123"
       responses:
-        '201':
+        "201":
           description: Usuario creado correctamente.
           content:
             application/json:
@@ -60,10 +60,10 @@ paths:
                     type: string
                     example: "Usuario creado correctamente"
                   usuario:
-                    $ref: '#/components/schemas/User'
-        '400':
+                    $ref: "#/components/schemas/User"
+        "400":
           description: Datos de entrada inválidos o faltantes.
-        '500':
+        "500":
           description: Error al crear el usuario.
 
   /usuarios/{id}:
@@ -81,15 +81,15 @@ paths:
       tags:
         - Usuarios
       responses:
-        '200':
+        "200":
           description: Usuario encontrado.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
+                $ref: "#/components/schemas/User"
+        "404":
           description: Usuario no encontrado.
-        '500':
+        "500":
           description: Error al obtener el usuario.
 
     put:
@@ -115,7 +115,7 @@ paths:
                   format: password
                   example: "nuevaContrasena123"
       responses:
-        '200':
+        "200":
           description: Usuario actualizado correctamente.
           content:
             application/json:
@@ -125,11 +125,11 @@ paths:
                   message:
                     type: string
                     example: "Usuario actualizado correctamente"
-        '400':
+        "400":
           description: Datos de actualización inválidos.
-        '404':
+        "404":
           description: Usuario no encontrado.
-        '500':
+        "500":
           description: Error al actualizar el usuario.
 
     delete:
@@ -137,7 +137,7 @@ paths:
       tags:
         - Usuarios
       responses:
-        '200':
+        "200":
           description: Usuario eliminado correctamente.
           content:
             application/json:
@@ -147,10 +147,36 @@ paths:
                   message:
                     type: string
                     example: "Usuario eliminado"
-        '404':
+        "404":
           description: Usuario no encontrado.
-        '500':
+        "500":
           description: Error al eliminar el usuario.
+
+  /usuarios/{id}/posts:
+    get:
+      summary: Obtener publicaciones de un usuario determinado
+      tags:
+        - Usuarios
+      description: Retorna todos los posts de la base de datos donde el autor coincide con el ID provisto en la URL.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID único del usuario del cual se quieren obtener los posts.
+          schema:
+            type: string
+            example: "64f1bc23e4b0a123456789ab"
+      responses:
+        "200":
+          description: Lista de posts del usuario devuelta con éxito.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+        "500":
+          description: Error interno al obtener los posts.
 
   /usuarios/{id}/follow:
     post:
@@ -166,7 +192,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Usuario seguido con éxito.
           content:
             application/json:
@@ -176,11 +202,11 @@ paths:
                   message:
                     type: string
                     example: "Usuario seguido"
-        '400':
+        "400":
           description: Operación de seguimiento inválida.
-        '404':
+        "404":
           description: Usuario no encontrado.
-        '500':
+        "500":
           description: Error al seguir al usuario.
 
   /usuarios/{id}/unfollow:
@@ -196,7 +222,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Unfollow completado con éxito.
           content:
             application/json:
@@ -206,9 +232,9 @@ paths:
                   message:
                     type: string
                     example: "Unfollow completado"
-        '404':
+        "404":
           description: Usuario no encontrado.
-        '500':
+        "500":
           description: Error al dejar de seguir al usuario.
 
   /tags:
@@ -217,15 +243,15 @@ paths:
       tags:
         - Etiquetas
       responses:
-        '200':
+        "200":
           description: Lista de tags obtenida correctamente.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'
-        '500':
+                  $ref: "#/components/schemas/Tag"
+        "500":
           description: Error al obtener las etiquetas.
 
     post:
@@ -245,16 +271,99 @@ paths:
                   type: string
                   example: "indignado"
       responses:
-        '201':
+        "201":
           description: Etiqueta creada con éxito.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag'
-        '400':
+                $ref: "#/components/schemas/Tag"
+        "400":
           description: El nombre del tag ya existe o es inválido.
-        '500':
+        "500":
           description: Error al crear la etiqueta.
+
+  /tags/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID único del tag
+        schema:
+          type: string
+          example: "64f1bc23e4b0a12345678902"
+
+    get:
+      summary: Obtener un tag por ID
+      tags:
+        - Etiquetas
+      responses:
+        "200":
+          description: Tag encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        "404":
+          description: Tag no encontrado.
+        "500":
+          description: Error al obtener el tag.
+
+    put:
+      summary: Actualizar el nombre de un tag
+      tags:
+        - Etiquetas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+              properties:
+                nombre:
+                  type: string
+                  example: "re_ofendido"
+      responses:
+        "200":
+          description: Tag actualizado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Tag actualizado correctamente"
+                  tag:
+                    $ref: "#/components/schemas/Tag"
+        "400":
+          description: El nombre del tag ya existe o es inválido.
+        "404":
+          description: Tag no encontrado.
+        "500":
+          description: Error al actualizar el tag.
+
+    delete:
+      summary: Eliminar un tag
+      tags:
+        - Etiquetas
+      description: Elimina el tag y lo desvincula de todos los posts que lo tenían asignado.
+      responses:
+        "200":
+          description: Tag eliminado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Tag eliminado correctamente"
+        "404":
+          description: Tag no encontrado.
+        "500":
+          description: Error al eliminar el tag.
 
   /tags/{id}/posts:
     get:
@@ -270,17 +379,17 @@ paths:
             type: string
             example: "64f1bc23e4b0a12345678902"
       responses:
-        '200':
+        "200":
           description: Lista de posts populados que contienen este tag.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
-        '404':
+                  $ref: "#/components/schemas/Post"
+        "404":
           description: La etiqueta no existe.
-        '500':
+        "500":
           description: Error al obtener los posts de la etiqueta.
 
   /tags/{id}/posts/{postId}:
@@ -303,7 +412,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Tag asignado con éxito al post.
           content:
             application/json:
@@ -313,109 +422,27 @@ paths:
                   message:
                     type: string
                     example: "Tag asignado con éxito al post"
-        '404':
+        "404":
           description: El tag o el post no existen.
-        '500':
+        "500":
           description: Error interno del servidor.
-  /tags/{id}:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        description: ID único del tag
-        schema:
-          type: string
-          example: "64f1bc23e4b0a12345678902"
-
-    get:
-      summary: Obtener un tag por ID
-      tags:
-        - Etiquetas
-      responses:
-        '200':
-          description: Tag encontrado.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Tag'
-        '404':
-          description: Tag no encontrado.
-        '500':
-          description: Error al obtener el tag.
-
-    put:
-      summary: Actualizar el nombre de un tag
-      tags:
-        - Etiquetas
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - nombre
-              properties:
-                nombre:
-                  type: string
-                  example: "re_ofendido"
-      responses:
-        '200':
-          description: Tag actualizado correctamente.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Tag actualizado correctamente"
-                  tag:
-                    $ref: '#/components/schemas/Tag'
-        '400':
-          description: El nombre del tag ya existe o es inválido.
-        '404':
-          description: Tag no encontrado.
-        '500':
-          description: Error al actualizar el tag.
-
-    delete:
-      summary: Eliminar un tag
-      tags:
-        - Etiquetas
-      description: Elimina el tag y lo desvincula de todos los posts que lo tenían asignado.
-      responses:
-        '200':
-          description: Tag eliminado correctamente.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Tag eliminado correctamente"
-        '404':
-          description: Tag no encontrado.
-        '500':
-          description: Error al eliminar el tag.
 
   /posts:
     get:
       summary: Obtener todos los posts
       tags:
         - Posts
-      description: Recupera la lista de posts (desde Redis si está en caché). Oculta de forma automática comentarios con más de 6 meses de antigüedad y devuelve datos populados de autor, tags y comentarios visibles.
+      description: Recupera la lista de posts (desde Redis si está en caché). No realiza populate físico de comentarios ya que se removió del modelo de Post.
       responses:
-        '200':
+        "200":
           description: Lista de posts obtenida correctamente.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Post'
-        '500':
+                  $ref: "#/components/schemas/Post"
+        "500":
           description: Error al obtener los posts.
 
     post:
@@ -451,7 +478,7 @@ paths:
                     type: string
                   example: ["64f1bc23e4b0a12345678902"]
       responses:
-        '201':
+        "201":
           description: Post creado correctamente.
           content:
             application/json:
@@ -462,8 +489,8 @@ paths:
                     type: string
                     example: "Post creado correctamente"
                   post:
-                    $ref: '#/components/schemas/Post'
-        '500':
+                    $ref: "#/components/schemas/Post"
+        "500":
           description: Error al crear el post.
 
   /posts/{id}:
@@ -480,15 +507,15 @@ paths:
       tags:
         - Posts
       responses:
-        '200':
+        "200":
           description: Post encontrado.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
-        '404':
+                $ref: "#/components/schemas/Post"
+        "404":
           description: El post no existe.
-        '500':
+        "500":
           description: Error al obtener el post.
 
     put:
@@ -508,7 +535,7 @@ paths:
                   type: string
                   example: "Texto del post editado de forma anti-social."
       responses:
-        '200':
+        "200":
           description: Post actualizado correctamente.
           content:
             application/json:
@@ -519,10 +546,10 @@ paths:
                     type: string
                     example: "Post actualizado correctamente"
                   post:
-                    $ref: '#/components/schemas/Post'
-        '404':
+                    $ref: "#/components/schemas/Post"
+        "404":
           description: El post no existe.
-        '500':
+        "500":
           description: Error al actualizar el post.
 
     delete:
@@ -530,7 +557,7 @@ paths:
       tags:
         - Posts
       responses:
-        '200':
+        "200":
           description: Post eliminado correctamente.
           content:
             application/json:
@@ -540,10 +567,36 @@ paths:
                   message:
                     type: string
                     example: "Post eliminado correctamente"
-        '404':
+        "404":
           description: El post no existe.
-        '500':
+        "500":
           description: Error al eliminar el post.
+
+  /posts/{id}/comentarios:
+    get:
+      summary: Obtener comentarios visibles de un post
+      tags:
+        - Comentarios
+      description: Procesa y archiva automáticamente los comentarios mayores a 6 meses (cambiando su estado a visible:false) y luego lista únicamente los que siguen activos para el post indicado.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del post del cual se quieren consultar los comentarios.
+          schema:
+            type: string
+            example: "64f1bc23e4b0a123456789ef"
+      responses:
+        "200":
+          description: Lista de comentarios activos filtrada y ordenada correctamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+        "500":
+          description: Error al obtener los comentarios.
 
   /posts/{id}/imagenes:
     parameters:
@@ -559,17 +612,17 @@ paths:
       tags:
         - Posts - Imágenes
       responses:
-        '200':
+        "200":
           description: Array de imágenes del post seleccionado.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PostImage'
-        '404':
+                  $ref: "#/components/schemas/PostImage"
+        "404":
           description: El post no existe.
-        '500':
+        "500":
           description: Error al obtener las imágenes.
 
     post:
@@ -589,7 +642,7 @@ paths:
                   type: string
                   example: "https://imagenes.com/nueva_foto.png"
       responses:
-        '200':
+        "200":
           description: Imagen agregada correctamente.
           content:
             application/json:
@@ -600,10 +653,10 @@ paths:
                     type: string
                     example: "Imagen agregada correctamente"
                   post:
-                    $ref: '#/components/schemas/Post'
-        '404':
+                    $ref: "#/components/schemas/Post"
+        "404":
           description: El post no existe.
-        '500':
+        "500":
           description: Error al agregar la imagen.
 
   /posts/{id}/upload/imagenes:
@@ -634,7 +687,7 @@ paths:
                   format: binary
                   description: Archivo de imagen a subir
       responses:
-        '200':
+        "200":
           description: Imagen subida y asociada correctamente al post.
           content:
             application/json:
@@ -645,10 +698,10 @@ paths:
                     type: string
                     example: "Imagen agregada correctamente"
                   post:
-                    $ref: '#/components/schemas/Post'
-        '404':
+                    $ref: "#/components/schemas/Post"
+        "404":
           description: El post no existe.
-        '500':
+        "500":
           description: Error al subir la imagen.
 
   /posts/{id}/imagenes/{imageId}:
@@ -670,7 +723,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Imagen eliminada del array correctamente.
           content:
             application/json:
@@ -681,10 +734,10 @@ paths:
                     type: string
                     example: "ImagenBox eliminada correctamente"
                   post:
-                    $ref: '#/components/schemas/Post'
-        '404':
+                    $ref: "#/components/schemas/Post"
+        "404":
           description: El post o la imagen no existen.
-        '500':
+        "500":
           description: Error al eliminar la imagen.
 
   /comentarios:
@@ -693,22 +746,22 @@ paths:
       tags:
         - Comentarios
       responses:
-        '200':
+        "200":
           description: Lista de comentarios obtenida correctamente.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Comment'
-        '500':
+                  $ref: "#/components/schemas/Comment"
+        "500":
           description: Error al obtener los comentarios.
 
     post:
       summary: Crear un nuevo comentario
       tags:
         - Comentarios
-      description: Crea un comentario y añade automáticamente su ID al array de comentarios del post relacionado.
+      description: Crea un comentario de forma independiente manteniendo únicamente su referencia interna hacia el post asignado.
       requestBody:
         required: true
         content:
@@ -732,8 +785,8 @@ paths:
                   description: "ID del post a comentar"
                   example: "64f1bc23e4b0a123456789ef"
       responses:
-        '201':
-          description: Comentario creado y vinculado correctamente.
+        "201":
+          description: Comentario creado correctamente.
           content:
             application/json:
               schema:
@@ -743,8 +796,8 @@ paths:
                     type: string
                     example: "Comentario creado correctamente"
                   comentario:
-                    $ref: '#/components/schemas/Comment'
-        '500':
+                    $ref: "#/components/schemas/Comment"
+        "500":
           description: Error al crear el comentario.
 
   /comentarios/{id}:
@@ -760,17 +813,17 @@ paths:
       summary: Obtener un comentario por ID
       tags:
         - Comentarios
-      description: Devuelve el comentario completo, populando los datos del autor (sin password) and el post asociado.
+      description: Devuelve el comentario completo, populando los datos del autor (sin password) y el post asociado.
       responses:
-        '200':
+        "200":
           description: Comentario obtenido con éxito.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
-        '404':
+                $ref: "#/components/schemas/Comment"
+        "404":
           description: El comentario no existe.
-        '500':
+        "500":
           description: Error al obtener el comentario.
 
     put:
@@ -790,7 +843,7 @@ paths:
                   type: string
                   example: "Contenido del comentario editado."
       responses:
-        '200':
+        "200":
           description: Comentario actualizado correctamente.
           content:
             application/json:
@@ -801,20 +854,20 @@ paths:
                     type: string
                     example: "Comentario actualizado correctamente"
                   comentario:
-                    $ref: '#/components/schemas/Comment'
-        '404':
+                    $ref: "#/components/schemas/Comment"
+        "404":
           description: El comentario no existe.
-        '500':
+        "500":
           description: Error al actualizar el comentario.
 
     delete:
       summary: Eliminar un comentario
       tags:
         - Comentarios
-      description: Remueve el ID del comentario del array de comentarios del post correspondiente antes de eliminar el documento físico.
+      description: Remueve físicamente el documento de comentario seleccionado sin afectar la colección de posts.
       responses:
-        '200':
-          description: Comentario eliminado y desvinculado correctamente.
+        "200":
+          description: Comentario eliminado correctamente.
           content:
             application/json:
               schema:
@@ -823,9 +876,9 @@ paths:
                   message:
                     type: string
                     example: "Comentario eliminado correctamente"
-        '404':
+        "404":
           description: El comentario no existe.
-        '500':
+        "500":
           description: Error al eliminar el comentario.
 
 components:
@@ -902,16 +955,11 @@ components:
         imagenes:
           type: array
           items:
-            $ref: '#/components/schemas/PostImage'
+            $ref: "#/components/schemas/PostImage"
         autor:
           type: string
           description: "ID del usuario creador"
           example: "64f1bc23e4b0a123456789ab"
-        comentarios:
-          type: array
-          items:
-            type: string
-            description: "IDs de los comentarios asociados"
         tags:
           type: array
           items:

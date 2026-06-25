@@ -7,9 +7,9 @@ const {
   eliminarUsuario,
   seguirUsuario,
   dejarDeSeguir,
-  obtenerPostsDeUserId,
+  
 } = require("../controllers/usuarios.controllers.js");
-
+const {obtenerPostsDeUserId} = require("../controllers/posts.controllers.js")
 const {
   validarUsuario,
   validarActualizarUsuario,
@@ -19,11 +19,12 @@ const validarUsuarioId = require("../middlewares/validarUsuarioId.js");
 const validarSeguidorId = require("../middlewares/validarSeguidorId.js");
 const validarSeguimientos = require("../middlewares/validarSeguimientos.js");
 
+
 const router = Router();
 
 router.get("/", obtenerUsuarios); //funciona
 router.get("/:id", validarUsuarioId, obtenerUsuario); //funciona
-router.get("/:id/posts", validarUsuarioId, obtenerPostsDeUserId);
+router.get("/:id/posts", validarUsuarioId, obtenerPostsDeUserId);//funciona
 router.post("/", validarUsuario, crearUsuario); //funciona-
 router.put(
   "/:id",

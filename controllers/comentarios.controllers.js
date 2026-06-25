@@ -28,21 +28,21 @@ const obtenerComentario = async (req, res) => {
 const crearComentario = async (req, res) => {
   try {
     const { contenido, autor, post } = req.body;
-    //  Creamos el comentario directamente
+
+    
     const comentario = await Comment.create({
       contenido,
       autor,
-      post: post,
+      post: post, 
     });
 
-    // Se sincroniza el comentario con el array de comentarios del post
-    await Post.findByIdAndUpdate(post, {
-      $push: { comentarios: comentario._id },
-    });
+    
     await redisClient.del("posts");
-    return res
-      .status(201)
-      .json({ message: "Comentario creado correctamente", comentario });
+
+    return res.status(201).json({ 
+      message: "Comentario creado correctamente", 
+      comentario 
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error al crear el comentario" });
@@ -56,7 +56,7 @@ const actualizarComentario = async (req, res) => {
 
     comentario.contenido = contenido;
     await comentario.save();
-    await redisClient.del("posts");
+    
     res
       .status(200)
       .json({ message: "Comentario actualizado correctamente", comentario });
@@ -70,10 +70,7 @@ const eliminarComentario = async (req, res) => {
   try {
     const comentario = req.comentario;
 
-    //Primero se saca el comentario del array de comentarios del post
-    await Post.findByIdAndUpdate(comentario.post, {
-      $pull: { comentarios: comentario._id },
-    });
+    
     await redisClient.del("posts");
     await comentario.deleteOne();
     res.status(200).json({ message: "Comentario eliminado correctamente" });
@@ -81,6 +78,8 @@ const eliminarComentario = async (req, res) => {
     res.status(500).json({ message: "Error al eliminar el comentario" });
   }
 };
+
+
 
 module.exports = {
   obtenerComentario,

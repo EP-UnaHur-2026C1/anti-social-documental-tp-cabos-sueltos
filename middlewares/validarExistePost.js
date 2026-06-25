@@ -5,29 +5,17 @@ const validarExistePost = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const mesesLimite = parseInt(process.env.COMMENT_MAX_AGE_MONTHS) || 6;
-    const fechaLimite = new Date();
-    fechaLimite.setMonth(fechaLimite.getMonth() - mesesLimite);
-
-    // Se actualiza la visibilidad de comentarios viejos de este post
-    await Comment.updateMany(
-      { post: id, createdAt: { $lt: fechaLimite }, visible: true },
-      { $set: { visible: false } },
-    );
-
+    // Buscamos el post trayendo solo lo necesario para validar su existencia y autoría
     const post = await Post.findById(id)
       .populate("autor", "-password")
-      .populate("tags", "nombre")
-      .populate({
-        path: "comentarios",
-        match: { visible: true },
-        populate: { path: "autor", select: "nickname" },
-      });
+      .populate("tags", "nombre");
 
+    // Si el post no existe, cortamos la ejecución acá
     if (!post) {
       return res.status(404).json({ message: "Post no encontrado" });
     }
 
+    // Guardamos el post en el objeto req para que el controlador que sigue pueda usarlo
     req.post = post;
     next();
   } catch (error) {

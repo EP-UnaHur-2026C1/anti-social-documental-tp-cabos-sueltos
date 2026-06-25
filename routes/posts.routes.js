@@ -29,9 +29,10 @@ const upload = require("../middlewares/upload.js");
 
 router.get("/", obtenerPosts); //funciona
 router.get("/:id", validarExistePost, obtenerPost); //funciona
+
 router.post("/", validarPost, crearPost); //funciona-
 router.put("/:id", validarPostId, validarActualizarPost, actualizarPost); //funciona-
-router.delete("/:id", validarPostId, eliminarPost); //funciona..hay que actualizar el array de posts en tags, para desvincular el post que se borra
+router.delete("/:id", validarPostId, eliminarPost); //funciona
 
 //Post Images
 router.get("/:id/imagenes", validarPostId, obtenerImagenesDePost);
