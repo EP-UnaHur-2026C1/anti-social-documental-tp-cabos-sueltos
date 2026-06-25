@@ -13,15 +13,15 @@ const {
 } = require("../middlewares/validarComentario.js");
 const validarComentarioId = require("../middlewares/validarComentarioId.js");
 
-router.get("/", obtenerComentarios)
+router.get("/", obtenerComentarios)//funciona
 router.get("/:id", validarComentarioId, obtenerComentario); //funciona
-router.post("/", validarComentario, crearComentario); // funciona
+router.post("/", validarComentario, crearComentario); // funciona-
 router.put(
   "/:id",
   validarComentarioId,
   validarActualizarComentario,
   actualizarComentario,
-); // funciona
+); // funciona-
 router.delete("/:id", validarComentarioId, eliminarComentario); //funciona
 
 module.exports = router;

@@ -101,6 +101,8 @@ La documentación de la API esta hecha en Swagger se puede visualizar:
 
 Los archivos YAML de Swagger están ubicados en `docs/` y se cargan desde `helpers/swagger.js`.
 
+En la carpera `colecciones` se encuentran los archivos JSON para realizar la pruebas en Postman.
+
 ## Endpoints de la API
 
 ### Usuarios — `/usuarios`
@@ -109,6 +111,7 @@ Los archivos YAML de Swagger están ubicados en `docs/` y se cargan desde `helpe
 |---|---|---|
 | GET | `/usuarios` | Obtener todos los usuarios |
 | GET | `/usuarios/:id` | Obtener un usuario por ID |
+| GET | `/usuarios/:id/posts` | Obtener todos los posts de un usuario |
 | POST | `/usuarios` | Crear un nuevo usuario |
 | PUT | `/usuarios/:id` | Actualizar un usuario |
 | DELETE | `/usuarios/:id` | Eliminar un usuario |
@@ -123,7 +126,7 @@ Los archivos YAML de Swagger están ubicados en `docs/` y se cargan desde `helpe
 | GET | `/posts/:id` | Obtener un post por ID |
 | POST | `/posts` | Crear un nuevo post |
 | PUT | `/posts/:id` | Actualizar un post |
-| DELETE | `/posts/:id` | Eliminar un post |
+| DELETE | `/posts/:id` | Eliminar un post  |
 | GET | `/posts/:id/imagenes` | Obtener imágenes de un post |
 | POST | `/posts/:id/imagenes` | Agregar una imagen a un post |
 | DELETE | `/posts/:id/imagenes/:imageId` | Eliminar una imagen de un post |

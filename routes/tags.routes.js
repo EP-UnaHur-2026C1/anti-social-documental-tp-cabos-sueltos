@@ -18,10 +18,10 @@ const {
 
 
 router.get("/", obtenerTags);//funciona
-router.get("/:id", validarExisteTag, obtenerTag);
-router.post("/", validarTag,validarNombreTag, crearTag);//funciona
-router.put("/:id", validarExisteTag, validarTag, validarNombreTag, actualizarTag);
-router.delete("/:id", validarExisteTag, eliminarTag);
+router.get("/:id", validarExisteTag, obtenerTag);//funciona
+router.post("/", validarTag,validarNombreTag, crearTag);//funciona-
+router.put("/:id", validarExisteTag, validarTag, validarNombreTag, actualizarTag);//funciona
+router.delete("/:id", validarExisteTag, eliminarTag);//funciona
 router.get("/:id/posts", validarExisteTag, obtenerPostsPorTag);//funciona
 router.post(
   "/:id/posts/:postId",

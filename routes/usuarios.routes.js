@@ -7,6 +7,7 @@ const {
   eliminarUsuario,
   seguirUsuario,
   dejarDeSeguir,
+  obtenerPostsDeUserId,
 } = require("../controllers/usuarios.controllers.js");
 
 const {
@@ -22,13 +23,14 @@ const router = Router();
 
 router.get("/", obtenerUsuarios); //funciona
 router.get("/:id", validarUsuarioId, obtenerUsuario); //funciona
-router.post("/", validarUsuario, crearUsuario); //funciona
+router.get("/:id/posts", validarUsuarioId, obtenerPostsDeUserId);
+router.post("/", validarUsuario, crearUsuario); //funciona-
 router.put(
   "/:id",
   validarUsuarioId,
   validarActualizarUsuario,
   actualizarUsuario,
-); //funciona
+); //funciona-
 router.delete("/:id", validarUsuarioId, eliminarUsuario); //funciona
 
 //Seguir y dejar de seguir usuarios
@@ -37,14 +39,14 @@ router.post(
   validarUsuarioId,
   validarSeguidorId,
   validarSeguimientos("seguir"),
-  seguirUsuario,
+  seguirUsuario, //funciona-
 );
 router.post(
   "/:id/unfollow",
   validarUsuarioId,
   validarSeguidorId,
   validarSeguimientos("dejarDeSeguir"),
-  dejarDeSeguir,
+  dejarDeSeguir, //funciona-
 );
 
 module.exports = router;

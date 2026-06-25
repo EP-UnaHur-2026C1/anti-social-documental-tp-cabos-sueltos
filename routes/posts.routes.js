@@ -2,7 +2,6 @@ const { Router } = require("express");
 const {
   obtenerPosts,
   obtenerPost,
-  obtenerPostsDeUserId,
   crearPost,
   actualizarPost,
   eliminarPost,
@@ -29,15 +28,14 @@ const validarUsuarioId = require("../middlewares/validarUsuarioId.js");
 const upload = require("../middlewares/upload.js");
 
 router.get("/", obtenerPosts); //funciona
-router.get("/:id", validarUsuarioId, obtenerPostsDeUserId); // funciona
 router.get("/:id", validarExistePost, obtenerPost); //funciona
-router.post("/", validarPost, crearPost); //funciona
-router.put("/:id", validarPostId, validarActualizarPost, actualizarPost); //funciona
+router.post("/", validarPost, crearPost); //funciona-
+router.put("/:id", validarPostId, validarActualizarPost, actualizarPost); //funciona-
 router.delete("/:id", validarPostId, eliminarPost); //funciona..hay que actualizar el array de posts en tags, para desvincular el post que se borra
 
 //Post Images
 router.get("/:id/imagenes", validarPostId, obtenerImagenesDePost);
-router.post("/:id/imagenes", validarPostId, validarPostImage, agregarImagen); //funciona
+router.post("/:id/imagenes", validarPostId, validarPostImage, agregarImagen); //funciona-
 
 //probemos si multer funciona como endpoint separado -- funciona
 router.post(

@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema(
       required: [true, "la contraseña es obligatoria"],
       select: false,
     },
+    posts:[{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Post",
+    },
+  ],
     seguidos: [
       {
         type: mongoose.Schema.Types.ObjectId,

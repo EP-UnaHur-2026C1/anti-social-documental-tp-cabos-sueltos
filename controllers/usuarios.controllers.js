@@ -87,6 +87,19 @@ const dejarDeSeguir = async (req, res) => {
   }
 };
 
+// obtener todos los post de un usuario
+
+const obtenerPostsDeUserId = async (req, res) => {
+  try {
+    const userId = req.usuario._id;
+    const usuarioConPosts = await User.findById(userId).populate("posts");
+    return res.status(200).json(usuarioConPosts.posts);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error al obtener los posts" });
+  }
+};
+
 module.exports = {
   obtenerUsuarios,
   obtenerUsuario,
@@ -95,4 +108,5 @@ module.exports = {
   eliminarUsuario,
   seguirUsuario,
   dejarDeSeguir,
+  obtenerPostsDeUserId,
 };

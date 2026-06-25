@@ -51,26 +51,6 @@ const obtenerPost = async (req, res) => {
   }
 };
 
-// obtener todos los post de un usuario
-
-const obtenerPostsDeUserId = async (req, res) => {
-  try {
-    const userId = req.usuario._id;
-    const posts = await Post.find({ autor: userId }).populate("autor");
-
-    if (posts.length === 0) {
-      return res
-        .status(200)
-        .json({ message: "el usuario aun no ha hecho ningun post" });
-    }
-
-    return res.status(200).json(posts);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error al obtener los posts" });
-  }
-};
-
 const crearPost = async (req, res) => {
   try {
     const { texto, autor, imagenes, tags } = req.body;
@@ -89,6 +69,10 @@ const crearPost = async (req, res) => {
         { $push: { posts: post._id } },
       );
     }
+    await User.findByIdAndUpdate(
+      autor,
+      { $push: { posts: post._id } }, // Agregamos el ID del nuevo post al array 'posts' del usuario
+    );
 
     await redisClient.del("posts");
 
@@ -118,9 +102,9 @@ const eliminarPost = async (req, res) => {
   try {
     const post = req.post;
 
-    // Buscamos TODOS los tags que tengan este post y se lo removemos de su array
     await Tag.updateMany({ posts: post._id }, { $pull: { posts: post._id } });
     await Comment.deleteMany({ post: post._id });
+    await User.updateMany({ posts: post._id }, { $pull: { posts: post._id } });
     await post.deleteOne();
 
     await redisClient.del("posts");
@@ -131,6 +115,7 @@ const eliminarPost = async (req, res) => {
     res.status(500).json({ message: "Error al eliminar el post" });
   }
 };
+
 const agregarImagen = async (req, res) => {
   try {
     const { url } = req.body;
@@ -190,7 +175,6 @@ const obtenerImagenesDePost = async (req, res) => {
 module.exports = {
   obtenerPosts,
   obtenerPost,
-  obtenerPostsDeUserId,
   crearPost,
   actualizarPost,
   eliminarPost,
