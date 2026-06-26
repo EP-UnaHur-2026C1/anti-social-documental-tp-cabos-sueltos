@@ -1,5 +1,4 @@
-const Post = require("../models/Post.js");
-const Comment = require("../models/Comment.js");
+const { Post, Comment } = require("../models/index.js");
 
 const validarExistePost = async (req, res, next) => {
   try {

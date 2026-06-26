@@ -732,7 +732,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "ImagenBox eliminada correctamente"
+                    example: "Imagen eliminada correctamente"
                   post:
                     $ref: "#/components/schemas/Post"
         "404":

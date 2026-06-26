@@ -1,4 +1,4 @@
-const User = require("../models/User.js");
+const { User, Post, Comment, Tag } = require("../models/index.js");
 
 const obtenerUsuarios = async (req, res) => {
   try {
@@ -49,6 +49,23 @@ const actualizarUsuario = async (req, res) => {
 const eliminarUsuario = async (req, res) => {
   try {
     const usuario = req.usuario; // Obtenemos el usuario validado por el middleware
+
+    //Se elimina todo lo relacionado al usuario como seguidores,seguidos, post, comentarios y tags
+    const posts = await Post.find({ autor: usuario._id });
+    const postIds = posts.map((p) => p._id);
+
+    await Tag.updateMany(
+      { posts: { $in: postIds } },
+      { $pull: { posts: { $in: postIds } } },
+    );
+    await Comment.deleteMany({ post: { $in: postIds } });
+    await Comment.deleteMany({ autor: usuario._id });
+    await Post.deleteMany({ autor: usuario._id });
+    await User.updateMany(
+      { $or: [{ seguidos: usuario._id }, { seguidores: usuario._id }] },
+      { $pull: { seguidos: usuario._id, seguidores: usuario._id } },
+    );
+
     await usuario.deleteOne(); // no hace falta pasarle argumento porque ya lo tiene usuario
     res.status(200).json({ message: "Usuario eliminado" });
   } catch (error) {
@@ -89,7 +106,6 @@ const dejarDeSeguir = async (req, res) => {
 
 // obtener todos los post de un usuario
 
-
 module.exports = {
   obtenerUsuarios,
   obtenerUsuario,
@@ -98,5 +114,4 @@ module.exports = {
   eliminarUsuario,
   seguirUsuario,
   dejarDeSeguir,
-  
 };

@@ -1,4 +1,4 @@
-const { User } = require("../models/index");
+const { User } = require("../models/index.js");
 
 const validarUsuarioId = async (req, res, next) => {
   try {

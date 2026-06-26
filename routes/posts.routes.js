@@ -9,6 +9,7 @@ const {
   eliminarImagenDePost,
   obtenerImagenesDePost,
   agregarImagenMulter,
+  obtenerComentariosDeUnPost
 } = require("../controllers/posts.controllers.js");
 
 const {
@@ -33,6 +34,9 @@ router.get("/:id", validarExistePost, obtenerPost); //funciona
 router.post("/", validarPost, crearPost); //funciona-
 router.put("/:id", validarPostId, validarActualizarPost, actualizarPost); //funciona-
 router.delete("/:id", validarPostId, eliminarPost); //funciona
+
+//Todos los comentarios de un post, antes estaba en el routes de comentarios
+router.get("/:id/comentarios", validarPostId, obtenerComentariosDeUnPost);
 
 //Post Images
 router.get("/:id/imagenes", validarPostId, obtenerImagenesDePost);

@@ -1,6 +1,5 @@
 const { Post, User, Comment, Tag } = require("../models/index.js");
 const { redisClient } = require("../config/redis");
-const { message } = require("../schemas/postImage.schema.js");
 
 const obtenerPosts = async (req, res) => {
   try {
@@ -14,15 +13,13 @@ const obtenerPosts = async (req, res) => {
       });
     }
 
-    
     const posts = await Post.find()
       .populate("autor", "-password")
-      .populate("tags", "nombre") 
+      .populate("tags", "nombre")
       .sort({ createdAt: -1 });
 
     await redisClient.set("posts", JSON.stringify(posts), { EX: 300 });
     return res.status(200).json(posts);
-
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error al obtener los posts" });
@@ -56,7 +53,6 @@ const crearPost = async (req, res) => {
         { $push: { posts: post._id } },
       );
     }
-  
 
     await redisClient.del("posts");
 
@@ -88,7 +84,7 @@ const eliminarPost = async (req, res) => {
 
     await Tag.updateMany({ posts: post._id }, { $pull: { posts: post._id } });
     await Comment.deleteMany({ post: post._id });
-   
+
     await post.deleteOne();
 
     await redisClient.del("posts");
@@ -133,7 +129,7 @@ const agregarImagenMulter = async (req, res) => {
 
 const eliminarImagenDePost = async (req, res) => {
   try {
-    const imageId = req.imagen;
+    const imageId = req.imagen._id;
     const post = req.post;
 
     post.imagenes.id(imageId).deleteOne();
@@ -147,9 +143,8 @@ const eliminarImagenDePost = async (req, res) => {
 
 const obtenerImagenesDePost = async (req, res) => {
   try {
-    const postId = req.post;
-    const post = await Post.findById(postId).populate("imagenes");
-    res.status(200).json(post.imagenes);
+    const postImagenes = req.post.imagenes;
+    res.status(200).json(postImagenes);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error al obtener las imágenes" });
@@ -158,7 +153,6 @@ const obtenerImagenesDePost = async (req, res) => {
 
 const obtenerPostsDeUserId = async (req, res) => {
   try {
-    
     const userId = req.usuario._id;
 
     const posts = await Post.find({ autor: userId });
@@ -169,12 +163,9 @@ const obtenerPostsDeUserId = async (req, res) => {
   }
 };
 
-
-
 const obtenerComentariosDeUnPost = async (req, res) => {
   try {
-    
-    const postId =  req.post._id; 
+    const postId = req.post._id; 
 
     //  VALIDACIÓN DE TIEMPO: Calculamos la fecha límite (6 meses por defecto)
     const mesesLimite = parseInt(process.env.COMMENT_MAX_AGE_MONTHS) || 6;
@@ -183,28 +174,29 @@ const obtenerComentariosDeUnPost = async (req, res) => {
 
     //  ACTUALIZACIÓN: Ocultamos los comentarios viejos de ESTE post antes de traerlos
     await Comment.updateMany(
-      { 
-        post: postId, 
-        createdAt: { $lt: fechaLimite }, 
-        visible: true 
+      {
+        post: postId,
+        createdAt: { $lt: fechaLimite },
+        visible: true,
       },
-      { $set: { visible: false } }
+      { $set: { visible: false } },
     );
 
     //  CONSULTA: Traemos solo los comentarios de este post que sigan siendo visibles
-    const comentarios = await Comment.find({ 
-      post: postId, 
-      visible: true 
+    const comentarios = await Comment.find({
+      post: postId,
+      visible: true,
     })
-    .populate("autor", "nickname") // Trae el nickname del creador del comentario
-    .sort({ createdAt: -1 }); // Los más recientes primero
+      .populate("autor", "nickname") // Trae el nickname del creador del comentario
+      .sort({ createdAt: -1 }); // Los más recientes primero
 
     // RESPUESTA: Devolvemos los comentarios al cliente
     return res.status(200).json(comentarios);
-
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Error al obtener los comentarios" });
+    return res
+      .status(500)
+      .json({ message: "Error al obtener los comentarios" });
   }
 };
 
@@ -219,5 +211,5 @@ module.exports = {
   eliminarImagenDePost,
   obtenerImagenesDePost,
   obtenerPostsDeUserId,
-  obtenerComentariosDeUnPost
+  obtenerComentariosDeUnPost,
 };

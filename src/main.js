@@ -1,6 +1,7 @@
 console.log("UnaHur - Anti-Social net");
 
 const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 const app = express();
 const conectarDb = require("../config/db");
@@ -17,10 +18,9 @@ const postsRouter = require("../routes/posts.routes.js");
 const comentariosRouter = require("../routes/comentarios.routes.js");
 const tagsRouter = require("../routes/tags.routes.js");
 
-dotenv.config();
-
 //EndPoints
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 app.use("/usuarios", usuariosRouter);
 app.use("/posts", postsRouter);
 app.use("/comentarios", comentariosRouter);
@@ -30,8 +30,8 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Levantamos el servidor usando la variable PORT
 const start = async () => {
   try {
-    conectarDb();
-    conectarRedis();
+    await conectarDb();
+    await conectarRedis();
     app.listen(PORT, () => {
       console.log(
         `Servidor de la Red Anti-Social corriendo en http://localhost:${PORT}`,

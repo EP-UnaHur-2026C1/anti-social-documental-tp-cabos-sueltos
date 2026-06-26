@@ -130,6 +130,7 @@ En la carpera `colecciones` se encuentran los archivos JSON para realizar la pru
 | GET | `/posts/:id/imagenes` | Obtener imágenes de un post |
 | POST | `/posts/:id/imagenes` | Agregar una imagen a un post |
 | DELETE | `/posts/:id/imagenes/:imageId` | Eliminar una imagen de un post |
+| GET | `/posts/:id/comentarios` | Obtener los comentarios de un post por ID |
 | POST | `/posts/:id/upload/imagenes` | Subir una imagen al servidor y asociarla a un post |
 
 ### Comentarios — `/comentarios`
@@ -138,7 +139,6 @@ En la carpera `colecciones` se encuentran los archivos JSON para realizar la pru
 |---|---|---|
 | GET | `/comentarios` | Obtener todos los comentarios |
 | GET | `/comentarios/:id` | Obtener un comentario por ID |
-| GET | `/comentarios/:id/post` | Obtener un comentarios de un post por ID |
 | POST | `/comentarios` | Crear un comentario |
 | PUT | `/comentarios/:id` | Actualizar un comentario |
 | DELETE | `/comentarios/:id` | Eliminar un comentario |

@@ -1,15 +1,13 @@
-const Post = require("../models/Post.js");
-const {
-  postImageSchema,
-  Post_Images,
-} = require("../schemas/postImage.schema.js");
+const postImageSchema = require("../schemas/postImage.schema.js");
 
 const validarImageId = async (req, res, next) => {
   try {
-    const { imageId } = req.params; 
+    const { imageId } = req.params;
     const post = req.post;
 
-    const imagen = post.imagenes.find(img => img._id.toString() === imageId.toString());
+    const imagen = post.imagenes.find(
+      (img) => img._id.toString() === imageId.toString(),
+    );
 
     if (!imagen) {
       return res
@@ -20,7 +18,9 @@ const validarImageId = async (req, res, next) => {
     next();
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Error al validar el ID de la imagen" });
+    return res
+      .status(500)
+      .json({ message: "Error al validar el ID de la imagen" });
   }
 };
 

@@ -1,4 +1,5 @@
-const User = require("../models/User.js");
+const { User } = require("../models/index.js");
+
 
 const validarSeguimiento = (accion) => async (req, res, next) => {
   try {

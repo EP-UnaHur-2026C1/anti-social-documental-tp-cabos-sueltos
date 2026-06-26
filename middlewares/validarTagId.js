@@ -1,6 +1,5 @@
 const { Tag, Post } = require("../models/index");
 
-
 const validarExisteTag = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -15,9 +14,9 @@ const validarExisteTag = async (req, res, next) => {
   }
 };
 
-
 const validarNombreTag = async (req, res, next) => {
   const { nombre } = req.body;
+  const { id } = req.params;
 
   try {
     if (!nombre) {
@@ -25,23 +24,24 @@ const validarNombreTag = async (req, res, next) => {
         .status(400)
         .json({ message: "El nombre de la etiqueta es obligatorio" });
     }
-    const tagExiste = await Tag.findOne({ nombre: { $regex: `^${nombre}$`, $options: "i" } });
+    const tagExiste = await Tag.findOne({
+      nombre: { $regex: `^${nombre}$`, $options: "i" },
+      _id: { $ne: id }, //Excluye el id del tag que se esta validando
+    });
     // evitar que alguien cree "Programacion" y "programacion" (con mayúscula y minúscula)
 
     if (tagExiste) {
       return res.status(400).json({ message: "La etiqueta ya existe" });
     }
-    
+
     next();
   } catch (error) {
-    console.error(error); 
+    console.error(error);
     return res
       .status(500)
       .json({ message: "Error interno al validar la etiqueta" });
   }
 };
-
-
 
 const validarExiteTagConPosts = async (req, res, next) => {
   const { id, postId } = req.params;
@@ -54,7 +54,9 @@ const validarExiteTagConPosts = async (req, res, next) => {
 
     // Validamos que el post no este vinsulado a ese tag
     if (post.tags.includes(tag._id)) {
-      return res.status(400).json({ message: "El tag ya está asignado a este post" });
+      return res
+        .status(400)
+        .json({ message: "El tag ya está asignado a este post" });
     }
 
     req.post = post;
@@ -66,9 +68,8 @@ const validarExiteTagConPosts = async (req, res, next) => {
   }
 };
 
-
 module.exports = {
   validarExiteTagConPosts,
   validarNombreTag,
-  validarExisteTag
+  validarExisteTag,
 };

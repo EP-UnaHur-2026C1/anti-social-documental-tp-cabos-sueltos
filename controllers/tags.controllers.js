@@ -65,7 +65,6 @@ const obtenerPostsPorTag = async (req, res) => {
       path: "posts",
       select: "texto imagenes autor tags",
     });
-    await redisClient.del("posts");
     // Devolvemos solo el array de posts ya populado
     return res.status(200).json(tag.posts);
   } catch (error) {
@@ -75,6 +74,7 @@ const obtenerPostsPorTag = async (req, res) => {
       .json({ message: "Error al obtener los posts de la etiqueta" });
   }
 };
+
 const asignarTagAPost = async (req, res) => {
   try {
     const post = req.post;
