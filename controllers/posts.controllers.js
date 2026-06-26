@@ -28,7 +28,9 @@ const obtenerPosts = async (req, res) => {
 
 const obtenerPost = async (req, res) => {
   try {
-    return res.status(200).json(req.post);
+    const postConComentarios = await req.post.populate("comentarios"); // ahora muestra los comentarios
+
+    return res.status(200).json(postConComentarios);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error al obtener el post" });
@@ -155,7 +157,7 @@ const obtenerPostsDeUserId = async (req, res) => {
   try {
     const userId = req.usuario._id;
 
-    const posts = await Post.find({ autor: userId });
+    const posts = await Post.find({ autor: userId }).populate("comentarios");
     return res.status(200).json(posts);
   } catch (error) {
     console.error(error);
@@ -165,7 +167,7 @@ const obtenerPostsDeUserId = async (req, res) => {
 
 const obtenerComentariosDeUnPost = async (req, res) => {
   try {
-    const postId = req.post._id; 
+    const postId = req.post._id;
 
     //  VALIDACIÓN DE TIEMPO: Calculamos la fecha límite (6 meses por defecto)
     const mesesLimite = parseInt(process.env.COMMENT_MAX_AGE_MONTHS) || 6;
